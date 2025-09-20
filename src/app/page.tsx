@@ -1,103 +1,155 @@
 import Image from "next/image";
+import Link from "next/link";
+import Navbar from "../components/mainpage/Navbar";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-white">
+      {/* Sticky Navbar */}
+      <Navbar 
+        logo={<Image src="/logo.svg" alt="CloudStro Logo" width={32} height={32} />}
+        name="CloudStro"
+        homeUrl="/"
+        mobileLinks={[
+          { text: "Features", href: "/features" },
+          { text: "Pricing", href: "/pricing" },
+          { text: "About", href: "/about" },
+        ]}
+        actions={[
+          { text: "Login", href: "/login", isButton: false },
+          {
+            text: "Get Started",
+            href: "/signup",
+            isButton: true,
+            variant: "default",
+          },
+        ]}
+      />
+      
+      {/* Main Content */}
+      <main className="flex flex-col min-h-screen">
+        {/* Hero Section - Full Page */}
+        <div className="pt-12 px-4 flex flex-col justify-center items-center min-h-screen">
+          <h1 className="text-6xl font-bold text-center text-gray-800 mb-6 transform transition-all duration-1000 hover:scale-105">
+            CloudStro Social Media Booster
+          </h1>
+          <p className="text-xl text-center text-gray-600 mb-12 max-w-2xl leading-relaxed">
+            Boost your social media presence with AI-powered tools that transform your content strategy and maximize engagement.
+          </p>
+          <Link href="/signup" className="px-8 py-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+            Start Boosting Now
+          </Link>
         </div>
+
+        {/* Parallax Section 1 - Features */}
+        <section className="relative min-h-screen flex items-center justify-center bg-white shadow-lg">
+          <div className="max-w-4xl mx-auto px-8 text-center">
+            <h2 className="text-5xl font-bold text-gray-800 mb-8 transform transition-all duration-700 hover:translate-y-2">
+              AI-Powered Features
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8 mt-12">
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Smart Content</h3>
+                <p className="text-gray-600">Generate engaging posts with AI that understands your brand voice and audience preferences.</p>
+              </div>
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Auto Scheduling</h3>
+                <p className="text-gray-600">Optimize posting times using machine learning to reach your audience when they're most active.</p>
+              </div>
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Analytics Plus</h3>
+                <p className="text-gray-600">Deep insights into engagement patterns, hashtag performance, and competitor analysis.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Parallax Section 2 - Benefits */}
+        <section className="relative min-h-screen flex items-center justify-center bg-gray-50 shadow-lg">
+          <div className="max-w-4xl mx-auto px-8 text-center">
+            <h2 className="text-5xl font-bold text-gray-800 mb-8 transform transition-all duration-700 hover:translate-y-2">
+              Why Choose CloudStro?
+            </h2>
+            <div className="grid md:grid-cols-2 gap-12 mt-12">
+              <div className="text-left">
+                <h3 className="text-3xl font-bold text-gray-800 mb-6">Increase Engagement by 300%</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Our AI algorithms analyze millions of successful posts to help you create content that resonates with your audience and drives meaningful interactions.
+                </p>
+              </div>
+              <div className="text-left">
+                <h3 className="text-3xl font-bold text-gray-800 mb-6">Save 10+ Hours Weekly</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Automate your content creation, scheduling, and engagement monitoring while maintaining authentic brand voice across all platforms.
+                </p>
+              </div>
+              <div className="text-left">
+                <h3 className="text-3xl font-bold text-gray-800 mb-6">Multi-Platform Management</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Manage Instagram, Twitter, LinkedIn, and Facebook from one dashboard with platform-specific optimization for each post.
+                </p>
+              </div>
+              <div className="text-left">
+                <h3 className="text-3xl font-bold text-gray-800 mb-6">Real-Time Insights</h3>
+                <p className="text-gray-600 text-lg leading-relaxed">
+                  Monitor your performance with live analytics, trend detection, and actionable recommendations to improve your strategy.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Parallax Section 3 - Testimonials */}
+        <section className="relative min-h-screen flex items-center justify-center bg-white shadow-lg">
+          <div className="max-w-4xl mx-auto px-8 text-center">
+            <h2 className="text-5xl font-bold text-gray-800 mb-12 transform transition-all duration-700 hover:translate-y-2">
+              Trusted by Creators
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-gray-50 p-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-md">
+                <p className="text-gray-700 text-lg italic mb-6">
+                  "CloudStro transformed my social media game. My engagement rates doubled in just 30 days, and I'm saving hours every week on content planning."
+                </p>
+                <div className="flex items-center justify-center">
+                  <div>
+                    <h4 className="font-bold text-gray-800">Sarah Mitchell</h4>
+                    <p className="text-gray-600">Digital Marketing Specialist</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 p-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-md">
+                <p className="text-gray-700 text-lg italic mb-6">
+                  "The AI-generated content feels authentic and on-brand. It's like having a social media expert working 24/7 for my business."
+                </p>
+                <div className="flex items-center justify-center">
+                  <div>
+                    <h4 className="font-bold text-gray-800">Marcus Chen</h4>
+                    <p className="text-gray-600">Small Business Owner</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="relative min-h-screen flex items-center justify-center bg-gray-900 shadow-lg">
+          <div className="max-w-3xl mx-auto px-8 text-center">
+            <h2 className="text-6xl font-bold text-white mb-8">
+              Ready to Boost Your Reach?
+            </h2>
+            <p className="text-xl text-gray-200 mb-12 leading-relaxed">
+              Join thousands of creators and businesses who are already seeing incredible results with CloudStro.
+            </p>
+            <div className="space-y-4 md:space-y-0 md:space-x-6 md:flex md:justify-center">
+              <Link href="/signup" className="w-full md:w-auto px-10 py-4 bg-blue-600 text-white rounded-lg text-lg font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                Start Free Trial
+              </Link>
+            </div>
+            <p className="text-gray-400 mt-6">No credit card required • 14-day free trial</p>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }

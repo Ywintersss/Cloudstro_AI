@@ -29,7 +29,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex flex-col min-h-screen">
         {/* Hero Section - Full Page */}
-        <div className="pt-12 px-4 flex flex-col justify-center items-center min-h-screen">
+        <div className="pb-12 px-4 flex flex-col justify-center items-center min-h-screen">
           <h1 className="text-6xl font-bold text-center text-gray-800 mb-6 transform transition-all duration-1000 hover:scale-105">
             CloudStro Social Media Booster
           </h1>
@@ -65,37 +65,30 @@ export default function Home() {
         </section>
 
         {/* Parallax Section 2 - Benefits */}
-        <section className="relative min-h-screen flex items-center justify-center bg-gray-50 shadow-lg">
+        <section className="relative min-h-screen flex items-center justify-center bg-white shadow-lg">
           <div className="max-w-4xl mx-auto px-8 text-center">
             <h2 className="text-5xl font-bold text-gray-800 mb-8 transform transition-all duration-700 hover:translate-y-2">
               Why Choose CloudStro?
             </h2>
-            <div className="grid md:grid-cols-2 gap-12 mt-12">
-              <div className="text-left">
-                <h3 className="text-3xl font-bold text-gray-800 mb-6">Increase Engagement by 300%</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Our AI algorithms analyze millions of successful posts to help you create content that resonates with your audience and drives meaningful interactions.
-                </p>
+            <div className="grid md:grid-cols-2 gap-8 mt-12">
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Increase Engagement by 80%</h3>
+                <p className="text-gray-600">Our AI algorithms analyze millions of successful posts to help you create content that resonates with your audience and drives meaningful interactions.</p>
               </div>
-              <div className="text-left">
-                <h3 className="text-3xl font-bold text-gray-800 mb-6">Save 10+ Hours Weekly</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Automate your content creation, scheduling, and engagement monitoring while maintaining authentic brand voice across all platforms.
-                </p>
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Save 10+ Hours Weekly</h3>
+                <p className="text-gray-600">Automate your content creation, scheduling, and engagement monitoring while maintaining authentic brand voice across all platforms.</p>
               </div>
-              <div className="text-left">
-                <h3 className="text-3xl font-bold text-gray-800 mb-6">Multi-Platform Management</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Manage Instagram, Twitter, LinkedIn, and Facebook from one dashboard with platform-specific optimization for each post.
-                </p>
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Multi-Platform Management</h3>
+                <p className="text-gray-600">Manage Instagram, Twitter, LinkedIn, and Facebook from one dashboard with platform-specific optimization for each post.</p>
               </div>
-              <div className="text-left">
-                <h3 className="text-3xl font-bold text-gray-800 mb-6">Real-Time Insights</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">
-                  Monitor your performance with live analytics, trend detection, and actionable recommendations to improve your strategy.
-                </p>
+              <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Real-Time Insights</h3>
+                <p className="text-gray-600">Monitor your performance with live analytics, trend detection, and actionable recommendations to improve your strategy.</p>
               </div>
             </div>
+            
           </div>
         </section>
 
@@ -133,12 +126,12 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="relative min-h-screen flex items-center justify-center bg-gray-900 shadow-lg">
+        <section className="pt-20 relative min-h-screen flex items-center justify-center bg-white shadow-lg">
           <div className="max-w-3xl mx-auto px-8 text-center">
-            <h2 className="text-6xl font-bold text-white mb-8">
+            <h2 className="text-6xl font-bold text-gray-800 mb-8 transform transition-all duration-700 hover:translate-y-2">
               Ready to Boost Your Reach?
             </h2>
-            <p className="text-xl text-gray-200 mb-12 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-12 leading-relaxed">
               Join thousands of creators and businesses who are already seeing incredible results with CloudStro.
             </p>
             <div className="space-y-4 md:space-y-0 md:space-x-6 md:flex md:justify-center">
@@ -146,7 +139,7 @@ export default function Home() {
                 Start Free Trial
               </Link>
             </div>
-            <p className="text-gray-400 mt-6">No credit card required • 14-day free trial</p>
+            <p className="text-gray-500 mt-6">No credit card required • 14-day free trial</p>
           </div>
         </section>
       </main>

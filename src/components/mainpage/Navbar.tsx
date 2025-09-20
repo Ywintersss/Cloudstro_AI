@@ -74,68 +74,35 @@ export default function Navbar({
           <NavbarLeft>
             <a
               href={homeUrl}
-              className="flex items-center gap-2 text-xl font-bold"
+              className="flex items-center gap-2 text-xl font-bold text-black"
             >
               {logo}
               {name}
             </a>
-            {showNavigation && (customNavigation || <Navigation />)}
+            {/* {showNavigation && (customNavigation || <div className="text-black font-semibold [&_*]:text-black [&_*]:font-semibold [&_a]:text-black [&_a]:font-semibold [&_button]:text-black [&_button]:font-semibold"><Navigation /></div>)} */}
           </NavbarLeft>
           <NavbarRight>
             {actions.map((action, index) =>
               action.isButton ? (
-                <Button
+                <a
                   key={index}
-                  variant={action.variant || "default"}
-                  asChild
+                  href={action.href}
+                  className="px-4 py-2 border border-black text-black rounded-md hover:bg-black hover:text-white transition-all duration-200"
                 >
-                  <a href={action.href}>
-                    {action.icon}
-                    {action.text}
-                    {action.iconRight}
-                  </a>
-                </Button>
+                  {action.icon}
+                  {action.text}
+                  {action.iconRight}
+                </a>
               ) : (
                 <a
                   key={index}
                   href={action.href}
-                  className="hidden text-sm md:block"
+                  className="text-lg text-black"
                 >
                   {action.text}
                 </a>
               )
             )}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="shrink-0 md:hidden"
-                >
-                  <Menu className="size-5" />
-                  <span className="sr-only">Toggle navigation menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <nav className="grid gap-6 text-lg font-medium">
-                  <a
-                    href={homeUrl}
-                    className="flex items-center gap-2 text-xl font-bold"
-                  >
-                    <span>{name}</span>
-                  </a>
-                  {mobileLinks.map((link, index) => (
-                    <a
-                      key={index}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      {link.text}
-                    </a>
-                  ))}
-                </nav>
-              </SheetContent>
-            </Sheet>
           </NavbarRight>
         </NavbarComponent>
       </div>

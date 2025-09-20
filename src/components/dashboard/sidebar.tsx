@@ -1,14 +1,22 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 
 interface SidebarProps {
   activeItem?: string;
+  onNavigate: (page: string) => void; // Add navigation handler prop
 }
 
-export default function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
+export default function Sidebar({
+  activeItem = "dashboard",
+  onNavigate,
+}: SidebarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleNavigation = (page: string) => {
+    onNavigate(page);
+    setIsMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -57,32 +65,91 @@ export default function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
         </div>
 
         <nav className="space-y-4 flex-1">
-          <Link
-            href="/dashboard"
-            className={`flex items-center px-4 py-3 rounded-lg transition-all ${
+          <button
+            onClick={() => handleNavigation("dashboard")}
+            className={`cursor-pointer w-full flex items-center px-4 py-3 rounded-lg transition-all text-left ${
               activeItem === "dashboard"
                 ? "text-gray-700 font-medium"
-                : "text-gray-600 hover:text-gray-800"
+                : "text-gray-600 hover:text-gray-800 hover:shadow-sm"
             }`}
             style={
               activeItem === "dashboard"
                 ? {
                     background: "#ffffff",
-                    boxShadow: "2px 2px 0px #5a5a5a, -2px -2px 0px #ffffff",
+                    border: "2px solid #e0e0e0",
                   }
                 : {}
             }
-            onClick={() => setIsMobileMenuOpen(false)}
           >
             <span className="text-lg">📊</span>
             <span className="ml-3">Dashboard</span>
-          </Link>
+          </button>
+
+          <button
+            onClick={() => handleNavigation("personalizations")}
+            className={`cursor-pointer w-full flex items-center px-4 py-3 rounded-lg transition-all text-left ${
+              activeItem === "personalizations"
+                ? "text-gray-700 font-medium"
+                : "text-gray-600 hover:text-gray-800 hover:shadow-sm"
+            }`}
+            style={
+              activeItem === "personalizations"
+                ? {
+                    background: "#ffffff",
+                    border: "2px solid #e0e0e0",
+                  }
+                : {}
+            }
+          >
+            <span className="text-lg">🎨</span>
+            <span className="ml-3">Personalizations</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation("engagement")}
+            className={`cursor-pointer w-full flex items-center px-4 py-3 rounded-lg transition-all text-left ${
+              activeItem === "engagement"
+                ? "text-gray-700 font-medium"
+                : "text-gray-600 hover:text-gray-800 hover:shadow-sm"
+            }`}
+            style={
+              activeItem === "engagement"
+                ? {
+                    background: "#ffffff",
+                    border: "2px solid #e0e0e0",
+                  }
+                : {}
+            }
+          >
+            <span className="text-lg">💬</span>
+            <span className="ml-3">Engagement</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation("analysis")}
+            className={`cursor-pointer w-full flex items-center px-4 py-3 rounded-lg transition-all text-left ${
+              activeItem === "analysis"
+                ? "text-gray-700 font-medium"
+                : "text-gray-600 hover:text-gray-800 hover:shadow-sm"
+            }`}
+            style={
+              activeItem === "analysis"
+                ? {
+                    background: "#ffffff",
+                    border: "2px solid #e0e0e0",
+                  }
+                : {}
+            }
+          >
+            <span className="text-lg">👤</span>
+            <span className="ml-3">Content Analysis</span>
+          </button>
         </nav>
 
         <div className="mt-6 flex flex-col space-y-4">
-          <Link
-            href="/settings"
-            className={`flex items-center px-4 py-3 rounded-lg transition-all ${
+          <button
+            onClick={() => handleNavigation("settings")}
+            className={`cursor-pointer w-full flex items-center px-4 py-3 rounded-lg transition-all text-left ${
               activeItem === "settings"
                 ? "text-gray-700 font-medium"
                 : "text-gray-600 hover:text-gray-800 hover:shadow-sm"
@@ -91,30 +158,28 @@ export default function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
               activeItem === "settings"
                 ? {
                     background: "#ffffff",
-                    boxShadow: "2px 2px 0px #5a5a5a, -2px -2px 0px #ffffff",
+                    border: "2px solid #e0e0e0",
                   }
                 : {}
             }
-            onClick={() => setIsMobileMenuOpen(false)}
           >
             <span className="text-lg">⚙️</span>
             <span className="ml-3">Settings</span>
-          </Link>
-          <Link
-            href={"/"}
-            className="cursor-pointer w-full px-4 py-3 text-white rounded-lg transition-all hover:scale-105"
-            style={{
-              background: "#ef4444",
-              boxShadow: "3px 3px 0px #dc2626, -2px -2px 0px #f87171",
-            }}
+          </button>
+          <button
             onClick={() => {
               setIsMobileMenuOpen(false);
               // Add logout logic here
               window.location.href = "/";
             }}
+            className="cursor-pointer w-full px-4 py-3 text-white rounded-lg transition-all hover:scale-105"
+            style={{
+              background: "#ef4444",
+              boxShadow: "3px 3px 0px #dc2626, -2px -2px 0px #f87171",
+            }}
           >
             Logout
-          </Link>
+          </button>
         </div>
       </aside>
     </>

@@ -21,7 +21,7 @@ export default function Home() {
             text: "Get Started",
             href: "/signup",
             isButton: true,
-            variant: "default",
+            variant: "outline",
           },
         ]}
       />

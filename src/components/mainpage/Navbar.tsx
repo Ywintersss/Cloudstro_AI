@@ -49,12 +49,17 @@ export default function Navbar({
     { text: "Documentation", href: siteConfig.url },
   ],
   actions = [
-    { text: "Sign in", href: siteConfig.url, isButton: false },
+    {
+      text: "Sign in",
+      href: siteConfig.url,
+      isButton: true,
+      variant: "outline",
+    },
     {
       text: "Get Started",
       href: siteConfig.url,
       isButton: true,
-      variant: "default",
+      variant: "outline",
     },
   ],
   showNavigation = true,
@@ -98,7 +103,7 @@ export default function Navbar({
                 >
                   {action.text}
                 </a>
-              ),
+              )
             )}
             <Sheet>
               <SheetTrigger asChild>

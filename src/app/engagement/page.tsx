@@ -179,16 +179,16 @@ export default function EngagementContent({
   );
   const recentComments = allComments
     .sort((a, b) => {
-      const timeA = a.time.includes("minute")
-        ? parseInt(a.time)
-        : a.time.includes("hour")
-        ? parseInt(a.time) * 60
-        : parseInt(a.time) * 1440;
-      const timeB = b.time.includes("minute")
-        ? parseInt(b.time)
-        : b.time.includes("hour")
-        ? parseInt(b.time) * 60
-        : parseInt(b.time) * 1440;
+      const timeA = a?.time?.includes("minute")
+        ? parseInt(a?.time ?? "0")
+        : a?.time?.includes("hour")
+        ? parseInt(a?.time ?? "0") * 60
+        : parseInt(a?.time ?? "0") * 1440;
+      const timeB = b?.time?.includes("minute")
+        ? parseInt(b?.time ?? "0")
+        : b?.time?.includes("hour")
+        ? parseInt(b?.time ?? "0") * 60
+        : parseInt(b?.time ?? "0") * 1440;
       return timeA - timeB;
     })
     .slice(0, 3);

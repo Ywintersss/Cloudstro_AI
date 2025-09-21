@@ -184,13 +184,13 @@ export default function DashboardContent() {
       </div>
 
       {/* Dashboard Grid */}
-      <div className="flex flex-col gap-4 lg:gap-6 max-w-7xl">
+      <div className="flex flex-col gap-4 lg:gap-6">
       
         {/* Second Row */}
-        <div className="flex flex-col md:flex-row gap-4 lg:gap-6">
+        <div className="flex flex-col gap-4 lg:gap-6">
           {/* Statistics Card */}
           <div
-            className="p-4 lg:p-6 md:w-[250px] lg:w-[250px]"
+            className="p-4 lg:p-6 w-full"
             style={{
               borderRadius: "36px",
               background: "#ffffff",
@@ -219,7 +219,7 @@ export default function DashboardContent() {
 
           {/* Tags Card */}
           <div
-            className="p-4 lg:p-6 flex-1 md:w-[450px] lg:w-[450px]"
+            className="p-4 lg:p-6 flex-1 w-full"
             style={{
               borderRadius: "36px",
               background: "#ffffff",
@@ -303,7 +303,7 @@ export default function DashboardContent() {
 
           {/* Region for Best Traffic Card */}
           <div
-            className="p-4 lg:p-6 md:w-[350px] lg:w-[350px]"
+            className="p-4 lg:p-6 w-full"
             style={{
               borderRadius: "36px",
               background: "#ffffff",

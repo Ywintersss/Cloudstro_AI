@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BarChart3, X, Minimize2, Sparkles, TrendingUp } from "lucide-react";
 
 type Platform = "x" | "facebook" | "youtube";
 
@@ -64,11 +65,178 @@ interface PlatformData {
 interface PlatformDetailsProps {
   platform: Platform;
   onBack: () => void;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
 }
+
+// AI Analysis Widget Component for Analytics Modal
+const AIAnalysisWidget = ({
+  analyticsContent,
+  platform,
+  onNavigateToAnalysis,
+}: {
+  analyticsContent: ContentItem;
+  platform: Platform;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  const handleAnalysisRedirect = () => {
+    console.log(
+      `Redirecting to analysis with ${platform} content data:`,
+      analyticsContent
+    );
+
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(analyticsContent);
+    } else {
+      alert(
+        `Would redirect to /analysis with detailed AI insights for: "${analyticsContent.title}"`
+      );
+    }
+  };
+
+  const getInsightPreview = () => {
+    if (!analyticsContent.analytics)
+      return "No analytics data available for AI analysis.";
+
+    const { engagementRate, views, likes } = analyticsContent.analytics;
+    if (engagementRate > 10) {
+      return `High-performing content! ${engagementRate}% engagement rate suggests strong audience connection. Let me analyze what made this successful.`;
+    } else if (engagementRate > 5) {
+      return `Solid performance with ${engagementRate}% engagement. I can identify optimization opportunities from your ${views.toLocaleString()} views.`;
+    } else {
+      return `This content has growth potential. With ${views.toLocaleString()} views but ${engagementRate}% engagement, let's find improvement strategies.`;
+    }
+  };
+
+  return (
+    <>
+      <div className="fixed bottom-4 right-4 z-50">
+        {!isOpen && (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="cursor-pointer w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-pulse hover:animate-none"
+          >
+            <div className="relative">
+              <BarChart3 className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-yellow-300" />
+            </div>
+          </button>
+        )}
+
+        {isOpen && (
+          <div
+            className={`bg-white rounded-xl shadow-2xl transition-all duration-300 ${
+              isMinimized ? "w-80 h-12" : "w-80 h-auto max-h-[400px]"
+            } border border-gray-200`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-t-xl flex items-center justify-between">
+              <h3 className="font-semibold flex items-center text-sm">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                AI Content Analysis
+              </h3>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <Minimize2 className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsMinimized(false);
+                  }}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {!isMinimized && (
+              <div className="p-4 space-y-3">
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-xs text-gray-800 mb-2 flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3 text-purple-600" />
+                    Content: {analyticsContent.title}
+                  </h4>
+                  {analyticsContent.analytics && (
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="text-center">
+                        <p className="font-bold text-purple-600">
+                          {analyticsContent.analytics.views.toLocaleString()}
+                        </p>
+                        <p className="text-gray-600">Views</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-blue-600">
+                          {analyticsContent.analytics.engagementRate}%
+                        </p>
+                        <p className="text-gray-600">Engagement</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-green-600">
+                          {analyticsContent.analytics.likes}
+                        </p>
+                        <p className="text-gray-600">Likes</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-500" />
+                    AI Insight:
+                  </label>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-2">
+                    <p className="text-xs text-gray-800 leading-relaxed">
+                      {getInsightPreview()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <button
+                    onClick={handleAnalysisRedirect}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-3 rounded-lg transition-all duration-200 font-medium text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <BarChart3 className="w-3 h-3" />
+                    Deep AI Analysis
+                  </button>
+
+                  <div className="text-xs text-gray-500 text-center">
+                    Get comprehensive insights for this content
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-blue-800 mb-1">
+                    Analysis includes:
+                  </h4>
+                  <ul className="text-xs text-blue-700 space-y-0.5">
+                    <li>• Performance vs similar content</li>
+                    <li>• Audience engagement patterns</li>
+                    <li>• Optimization recommendations</li>
+                    <li>• Content strategy insights</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default function PlatformDetails({
   platform,
   onBack,
+  onNavigateToAnalysis,
 }: PlatformDetailsProps) {
   const [selectedComments, setSelectedComments] = useState<number[]>([]);
   const [replyText, setReplyText] = useState<string>("");
@@ -561,6 +729,12 @@ export default function PlatformDetails({
     setSelectedComments([]);
   };
 
+  const handleNavigateToAnalysis = (content: ContentItem) => {
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(content);
+    }
+  };
+
   // Analytics Modal Component
   const AnalyticsModal = () => {
     if (!isAnalyticsOpen || !analyticsContent) return null;
@@ -596,26 +770,46 @@ export default function PlatformDetails({
           {/* Modal Header */}
           <div className="sticky top-0 bg-white rounded-t-3xl border-b border-gray-200 p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                  <span className="text-3xl">{currentPlatformData.icon}</span>
-                  Analytics
-                </h2>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-sm font-medium text-gray-700">
-                    {analyticsContent.title}
-                  </span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {analyticsContent.type}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {analyticsContent.date}
-                  </span>
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="flex flex-row gap-5">
+                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                      <span className="text-3xl">
+                        {currentPlatformData.icon}
+                      </span>
+                      Analytics
+                    </h2>
+                    {/* AI Widget Button in Header */}
+                    <button
+                      onClick={() => {
+                        if (analyticsContent) {
+                          handleNavigateToAnalysis(analyticsContent);
+                        }
+                      }}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm flex items-center gap-2 shadow-md hover:shadow-lg"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4" />
+                      AI Analysis
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {analyticsContent.title}
+                    </span>
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {analyticsContent.type}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {analyticsContent.date}
+                    </span>
+                  </div>
                 </div>
               </div>
+
               <button
                 onClick={closeAnalytics}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold ml-4"
               >
                 ×
               </button>
@@ -926,6 +1120,15 @@ export default function PlatformDetails({
             </div>
           </div>
         </div>
+
+        {/* AI Analysis Widget - Only shows when analytics modal is open */}
+        {analyticsContent && (
+          <AIAnalysisWidget
+            analyticsContent={analyticsContent}
+            platform={platform}
+            onNavigateToAnalysis={onNavigateToAnalysis}
+          />
+        )}
       </div>
     );
   };
@@ -1004,6 +1207,273 @@ export default function PlatformDetails({
           <p className="text-2xl font-bold text-orange-600">
             {currentPlatformData.stats.engagementRate}%
           </p>
+        </div>
+      </div>
+
+      {/* Recommendation Time Card */}
+          <div
+            className="p-4 lg:p-6 flex-1 mb-8"
+            style={{
+              borderRadius: "36px",
+              background: "#ffffff",
+              border: "2px solid #e0e0e0",
+              boxSizing: "border-box",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                ⏰ Recommendation Time
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Best Time</p>
+                <p className="text-lg font-bold text-blue-600">2:00 PM</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Peak Day</p>
+                <p className="text-lg font-bold text-green-600">Tuesday</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Avg Engagement</p>
+                <p className="text-lg font-bold text-purple-600">8.7%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Reach</p>
+                <p className="text-lg font-bold text-orange-600">12.3K</p>
+              </div>
+            </div>
+          </div>
+
+      {/* AI Platform Insights Section */}
+      <div
+        className="p-6 mb-8"
+        style={{
+          borderRadius: "36px",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          border: "2px solid #e0e0e0",
+          boxSizing: "border-box",
+        }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">
+              AI Platform Insights
+            </h3>
+            <p className="text-white/80 text-sm">
+              AI-powered analysis of your {currentPlatformData.name} performance
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Performance Summary */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Performance Summary
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center text-white/90">
+                <span>Platform Score:</span>
+                <span className="font-bold text-green-300">
+                  {currentPlatformData.stats.engagementRate >= 10
+                    ? "Excellent"
+                    : currentPlatformData.stats.engagementRate >= 7
+                    ? "Good"
+                    : currentPlatformData.stats.engagementRate >= 5
+                    ? "Average"
+                    : "Needs Improvement"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-white/90">
+                <span>Content Quality:</span>
+                <span className="font-bold text-blue-300">
+                  {currentPlatformData.allContent.filter(
+                    (c) =>
+                      c.analytics?.engagementRate &&
+                      c.analytics.engagementRate > 8
+                  ).length > 0
+                    ? "High"
+                    : "Moderate"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-white/90">
+                <span>Audience Engagement:</span>
+                <span className="font-bold text-purple-300">
+                  {currentPlatformData.stats.comments > 300
+                    ? "Very Active"
+                    : currentPlatformData.stats.comments > 150
+                    ? "Active"
+                    : "Moderate"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Strengths */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Key Strengths
+            </h4>
+            <div className="space-y-2">
+              {(() => {
+                const strengths = [];
+                if (currentPlatformData.stats.engagementRate > 8) {
+                  strengths.push(
+                    "High engagement rate drives strong community connection"
+                  );
+                }
+                if (currentPlatformData.stats.shares > 150) {
+                  strengths.push(
+                    "Content highly shareable, expanding organic reach"
+                  );
+                }
+                if (currentPlatformData.stats.comments > 200) {
+                  strengths.push("Strong community interaction and discussion");
+                }
+                if (strengths.length === 0) {
+                  strengths.push(
+                    "Consistent content publishing",
+                    "Building audience base",
+                    "Establishing platform presence"
+                  );
+                }
+                return strengths.slice(0, 3).map((strength, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-green-300 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-sm text-white/90">{strength}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+
+          {/* AI Recommendations */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              AI Recommendations
+            </h4>
+            <div className="space-y-2">
+              {(() => {
+                const recommendations = [];
+                if (currentPlatformData.stats.engagementRate < 5) {
+                  recommendations.push(
+                    "Focus on more interactive content formats"
+                  );
+                } else if (currentPlatformData.stats.engagementRate < 8) {
+                  recommendations.push(
+                    "Experiment with posting times and content types"
+                  );
+                }
+                if (currentPlatformData.stats.shares < 100) {
+                  recommendations.push(
+                    "Add clear call-to-actions to boost sharing"
+                  );
+                }
+                if (currentPlatformData.stats.comments < 150) {
+                  recommendations.push(
+                    "Ask more questions to spark discussions"
+                  );
+                }
+
+                // Platform-specific recommendations
+                if (platform === "x") {
+                  recommendations.push(
+                    "Utilize trending hashtags for broader reach"
+                  );
+                } else if (platform === "facebook") {
+                  recommendations.push(
+                    "Share behind-the-scenes content for authenticity"
+                  );
+                } else if (platform === "youtube") {
+                  recommendations.push(
+                    "Optimize thumbnails for higher click-through rates"
+                  );
+                }
+
+                return recommendations.slice(0, 3).map((rec, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-sm text-white/90">{rec}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+        </div>
+
+        {/* Overall Platform Analysis - Dropdown */}
+        <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">
+          <button
+            onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+          >
+            <h4 className="font-semibold text-white flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Platform Analysis Summary
+            </h4>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/70 bg-white/20 px-2 py-1 rounded-full">
+                AI Generated
+              </span>
+              <div
+                className={`transform transition-transform duration-200 ${
+                  isAnalyticsOpen ? "rotate-180" : ""
+                }`}
+              >
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </button>
+
+          {isAnalyticsOpen && (
+            <div className="p-4 border-t border-white/10">
+              <p className="text-white/90 text-sm leading-relaxed">
+                {(() => {
+                  const totalLikes = currentPlatformData.stats.totalLikes;
+                  const engagementRate =
+                    currentPlatformData.stats.engagementRate;
+                  const contentCount = currentPlatformData.allContent.length;
+
+                  if (engagementRate >= 10) {
+                    return `Your ${
+                      currentPlatformData.name
+                    } presence is performing exceptionally well with ${totalLikes.toLocaleString()} total likes and ${engagementRate}% engagement rate. Your ${contentCount} pieces of content demonstrate strong audience connection and viral potential. This platform should be a key focus area for content expansion.`;
+                  } else if (engagementRate >= 7) {
+                    return `${
+                      currentPlatformData.name
+                    } shows solid performance with ${totalLikes.toLocaleString()} total likes across ${contentCount} posts. Your ${engagementRate}% engagement rate indicates good audience resonance. With strategic optimization, this platform has strong growth potential.`;
+                  } else if (engagementRate >= 5) {
+                    return `Your ${
+                      currentPlatformData.name
+                    } account shows moderate performance with ${totalLikes.toLocaleString()} total likes. The ${engagementRate}% engagement rate suggests room for improvement through content optimization and audience targeting strategies.`;
+                  } else {
+                    return `${
+                      currentPlatformData.name
+                    } presents an opportunity for growth. While you have ${contentCount} posts and ${totalLikes.toLocaleString()} total likes, the ${engagementRate}% engagement rate indicates potential for significant improvement through strategic content refinement.`;
+                  }
+                })()}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

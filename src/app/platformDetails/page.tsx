@@ -778,7 +778,7 @@ export default function PlatformDetails({
 
   const handleBulkReply = () => {
     console.log(
-      `Replying "${replyText}" to ${selectedComments.length} comments`
+      `Replying "${replyText}" to ${selectedComments?.length} comments`
     );
     setReplyText("");
     setSelectedComments([]);
@@ -795,7 +795,7 @@ export default function PlatformDetails({
     if (!isAnalyticsOpen || !analyticsContent) return null;
 
     // Handle case where content has no analytics
-    if (!analyticsContent.analytics) {
+    if (!analyticsContent?.analytics) {
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white rounded-3xl w-full max-w-2xl p-6">
@@ -812,7 +812,7 @@ export default function PlatformDetails({
               <p className="text-gray-500 mb-2">
                 No analytics available for this content
               </p>
-              <p className="text-sm text-gray-400">{analyticsContent.title}</p>
+              <p className="text-sm text-gray-400">{analyticsContent?.title}</p>
             </div>
           </div>
         </div>
@@ -850,13 +850,13 @@ export default function PlatformDetails({
                   </div>
                   <div className="flex items-center gap-3 mt-2">
                     <span className="text-sm font-medium text-gray-700">
-                      {analyticsContent.title}
+                      {analyticsContent?.title}
                     </span>
                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {analyticsContent.type}
+                      {analyticsContent?.type}
                     </span>
                     <span className="text-xs text-gray-500">
-                      {analyticsContent.date}
+                      {analyticsContent?.date}
                     </span>
                   </div>
                 </div>
@@ -948,10 +948,10 @@ export default function PlatformDetails({
                         </select>
                       </div>
                       <div className="text-sm text-gray-600 mb-2">
-                        {selectedComments.length} selected
+                        {selectedComments?.length} selected
                       </div>
 
-                      {selectedComments.length > 0 && (
+                      {selectedComments?.length > 0 && (
                         <div className="flex gap-2">
                           <input
                             type="text"
@@ -976,7 +976,7 @@ export default function PlatformDetails({
                         <div
                           key={comment.id}
                           className={`p-2 rounded border text-xs transition-colors ${
-                            selectedComments.includes(comment.id)
+                            selectedComments?.includes(comment.id)
                               ? "bg-blue-50 border-blue-300"
                               : "bg-white border-gray-200"
                           }`}
@@ -984,7 +984,7 @@ export default function PlatformDetails({
                           <div className="flex items-start space-x-2">
                             <input
                               type="checkbox"
-                              checked={selectedComments.includes(comment?.id)}
+                              checked={selectedComments?.includes(comment?.id)}
                               onChange={() => handleCommentSelect(comment?.id)}
                               className="mt-1"
                             />
@@ -1028,7 +1028,7 @@ export default function PlatformDetails({
                         Top Countries
                       </h3>
                       <div className="space-y-3">
-                        {analyticsContent.analytics.topCountries.map(
+                        {analyticsContent?.analytics.topCountries.map(
                           (country, index) => (
                             <div
                               key={index}
@@ -1061,7 +1061,7 @@ export default function PlatformDetails({
                       </h3>
                       <div className="space-y-3">
                         {Object.entries(
-                          analyticsContent.analytics.ageGroups
+                          analyticsContent?.analytics.ageGroups
                         ).map(([age, percentage]) => (
                           <div
                             key={age}
@@ -1090,7 +1090,7 @@ export default function PlatformDetails({
                         Hourly Engagement
                       </h3>
                       <div className="grid grid-cols-12 gap-1 mb-3">
-                        {analyticsContent.analytics.hourlyEngagement.map(
+                        {analyticsContent?.analytics.hourlyEngagement.map(
                           (value, hour) => (
                             <div key={hour} className="text-center">
                               <div
@@ -1122,7 +1122,7 @@ export default function PlatformDetails({
                     🏆 Top Posts
                   </h3>
                   <div className="space-y-2">
-                    {currentPlatformData.topPosts
+                    {currentPlatformData?.topPosts
                       .slice(0, 3)
                       .map((post, index) => (
                         <div
@@ -1149,7 +1149,7 @@ export default function PlatformDetails({
                     📈 Success
                   </h3>
                   <div className="space-y-2">
-                    {currentPlatformData.successFactors
+                    {currentPlatformData?.successFactors
                       .slice(0, 3)
                       .map((factor, index) => (
                         <div
@@ -1692,14 +1692,14 @@ export default function PlatformDetails({
           <h3 className="text-lg font-bold text-gray-800">📋 All Content</h3>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">
-              {currentPlatformData.allContent.length} posts
+              {currentPlatformData?.allContent.length} posts
             </span>
           </div>
         </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentPlatformData.allContent.map((content) => (
+          {currentPlatformData?.allContent.map((content) => (
             <div
               key={content.id}
               className="p-4 rounded-lg border bg-gray-50 border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"

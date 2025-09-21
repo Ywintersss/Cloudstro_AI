@@ -1028,7 +1028,7 @@ export default function PlatformDetails({
                         Top Countries
                       </h3>
                       <div className="space-y-3">
-                        {analyticsContent?.analytics?.topCountries.map(
+                        {analyticsContent?.analytics?.topCountries?.map(
                           (country, index) => (
                             <div
                               key={index}
@@ -1062,7 +1062,7 @@ export default function PlatformDetails({
                       <div className="space-y-3">
                         {Object.entries(
                           analyticsContent?.analytics?.ageGroups
-                        ).map(([age, percentage]) => (
+                        )?.map(([age, percentage]) => (
                           <div
                             key={age}
                             className="flex items-center justify-between"
@@ -1090,7 +1090,7 @@ export default function PlatformDetails({
                         Hourly Engagement
                       </h3>
                       <div className="grid grid-cols-12 gap-1 mb-3">
-                        {analyticsContent?.analytics?.hourlyEngagement.map(
+                        {analyticsContent?.analytics?.hourlyEngagement?.map(
                           (value, hour) => (
                             <div key={hour} className="text-center">
                               <div
@@ -1124,7 +1124,7 @@ export default function PlatformDetails({
                   <div className="space-y-2">
                     {currentPlatformData?.topPosts
                       .slice(0, 3)
-                      .map((post, index) => (
+                      ?.map((post, index) => (
                         <div
                           key={index}
                           className="p-2 bg-white rounded border border-gray-200"
@@ -1151,7 +1151,7 @@ export default function PlatformDetails({
                   <div className="space-y-2">
                     {currentPlatformData?.successFactors
                       .slice(0, 3)
-                      .map((factor, index) => (
+                      ?.map((factor, index) => (
                         <div
                           key={index}
                           className="p-2 bg-white rounded border border-gray-200"
@@ -1426,7 +1426,7 @@ export default function PlatformDetails({
                     // Average engagement rate from analytics
                     const rates = currentPlatformData?.allContent?.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
                     if (rates?.length === 0) return "N/A";
-                    const avg = rates.reduce((a,b) => a+b,0)/rates?.length;
+                    const avg = rates?.reduce((a,b) => a+b,0)/rates?.length;
                     return `${avg.toFixed(1)}%`;
                   })()}
                 </p>
@@ -1438,7 +1438,7 @@ export default function PlatformDetails({
                     // Sum of all views from analytics
                     const views = currentPlatformData?.allContent?.map(c => c.analytics?.views).filter(Boolean) as number[];
                     if (views?.length === 0) return "N/A";
-                    const total = views.reduce((a,b) => a+b,0);
+                    const total = views?.reduce((a,b) => a+b,0);
                     return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
                   })()}
                 </p>
@@ -1544,7 +1544,7 @@ export default function PlatformDetails({
                     "Establishing platform presence"
                   );
                 }
-                return strengths.slice(0, 3).map((strength, index) => (
+                return strengths.slice(0, 3)?.map((strength, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-green-300 rounded-full mt-2 flex-shrink-0"></div>
                     <span className="text-sm text-white/90">{strength}</span>
@@ -1598,7 +1598,7 @@ export default function PlatformDetails({
                   );
                 }
 
-                return recommendations?.slice(0, 3).map((rec, index) => (
+                return recommendations?.slice(0, 3)?.map((rec, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full mt-2 flex-shrink-0"></div>
                     <span className="text-sm text-white/90">{rec}</span>

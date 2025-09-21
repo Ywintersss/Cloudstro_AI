@@ -1210,6 +1210,41 @@ export default function PlatformDetails({
         </div>
       </div>
 
+      {/* Recommendation Time Card */}
+          <div
+            className="p-4 lg:p-6 flex-1 mb-8"
+            style={{
+              borderRadius: "36px",
+              background: "#ffffff",
+              border: "2px solid #e0e0e0",
+              boxSizing: "border-box",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                ⏰ Recommendation Time
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Best Time</p>
+                <p className="text-lg font-bold text-blue-600">2:00 PM</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Peak Day</p>
+                <p className="text-lg font-bold text-green-600">Tuesday</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Avg Engagement</p>
+                <p className="text-lg font-bold text-purple-600">8.7%</p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Reach</p>
+                <p className="text-lg font-bold text-orange-600">12.3K</p>
+              </div>
+            </div>
+          </div>
+
       {/* AI Platform Insights Section */}
       <div
         className="p-6 mb-8"

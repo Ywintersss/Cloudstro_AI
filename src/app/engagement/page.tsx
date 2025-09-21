@@ -153,28 +153,28 @@ export default function EngagementContent({
   };
 
   const totalStats = {
-    totalLikes: Object.values(platformData).reduce(
+    totalLikes: Object?.values(platformData)?.reduce(
       (sum, platform) => sum + platform?.stats?.totalLikes,
       0
     ),
-    totalComments: Object.values(platformData).reduce(
+    totalComments: Object?.values(platformData)?.reduce(
       (sum, platform) => sum + platform?.stats?.comments,
       0
     ),
-    totalShares: Object.values(platformData).reduce(
+    totalShares: Object?.values(platformData)?.reduce(
       (sum, platform) => sum + platform?.stats?.shares,
       0
     ),
     avgEngagementRate:
-      Object.values(platformData).reduce(
+      Object?.values(platformData)?.reduce(
         (sum, platform) => sum + platform?.stats?.engagementRate,
         0
-      ) / Object.values(platformData).length,
-    totalPlatforms: Object.keys(platformData)?.length,
+      ) / Object?.values(platformData)?.length,
+    totalPlatforms: Object?.keys(platformData)?.length,
   };
 
   // Get recent activity across all platforms
-  const allComments = Object.values(platformData).flatMap(
+  const allComments = Object?.values(platformData)?.flatMap(
     (platform) => platform?.comments
   );
   const recentComments = allComments
@@ -282,7 +282,7 @@ export default function EngagementContent({
                 Platform Breakdown
               </h3>
               <div className="space-y-1">
-                {Object.entries(platformData).map(([key, platform]) => (
+                {Object?.entries(platformData)?.map(([key, platform]) => (
                   <div
                     key={key}
                     className="flex items-center justify-between bg-gray-50 rounded-md p-2 border border-gray-200"
@@ -312,7 +312,7 @@ export default function EngagementContent({
                 Recent Activity
               </h3>
               <div className="space-y-1">
-                {recentComments.map((comment, index) => (
+                {recentComments?.map((comment, index) => (
                   <div
                     key={index}
                     className="bg-gray-50 rounded-md p-2 border border-gray-200"
@@ -360,11 +360,11 @@ export default function EngagementContent({
             icon: "📺",
             color: "bg-red-600 hover:bg-red-700",
           },
-        ].map((item) => (
+        ]?.map((item) => (
           <button
             key={item?.platform}
             onClick={() => handlePlatformSelect(item?.platform)}
-            className={`flex items-center gap-3 px-6 py-3 text-white rounded-lg font-medium transition-all transform hover:scale-105 ${item.color}`}
+            className={`flex items-center gap-3 px-6 py-3 text-white rounded-lg font-medium transition-all transform hover:scale-105 ${item?.color}`}
           >
             <span className="text-xl">{item?.icon}</span>
             <span>{item?.name}</span>

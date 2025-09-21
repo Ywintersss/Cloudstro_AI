@@ -106,9 +106,9 @@ const AIAnalysisWidget = ({
     if (engagementRate > 10) {
       return `High-performing content! ${engagementRate}% engagement rate suggests strong audience connection. Let me analyze what made this successful.`;
     } else if (engagementRate > 5) {
-      return `Solid performance with ${engagementRate}% engagement. I can identify optimization opportunities from your ${views.toLocaleString()} views.`;
+      return `Solid performance with ${engagementRate}% engagement. I can identify optimization opportunities from your ${views?.toLocaleString()} views.`;
     } else {
-      return `This content has growth potential. With ${views.toLocaleString()} views but ${engagementRate}% engagement, let's find improvement strategies.`;
+      return `This content has growth potential. With ${views?.toLocaleString()} views but ${engagementRate}% engagement, let's find improvement strategies.`;
     }
   };
 
@@ -749,7 +749,7 @@ export default function PlatformDetails({
 
   const currentPlatformData = platformData[platform];
 
-  const filteredComments = currentPlatformData?.comments.filter((comment) => {
+  const filteredComments = currentPlatformData?.comments?.filter((comment) => {
     if (filterType === "all") return true;
     return comment.type === filterType;
   });
@@ -1028,7 +1028,7 @@ export default function PlatformDetails({
                         Top Countries
                       </h3>
                       <div className="space-y-3">
-                        {analyticsContent?.analytics.topCountries.map(
+                        {analyticsContent?.analytics?.topCountries.map(
                           (country, index) => (
                             <div
                               key={index}
@@ -1061,7 +1061,7 @@ export default function PlatformDetails({
                       </h3>
                       <div className="space-y-3">
                         {Object.entries(
-                          analyticsContent?.analytics.ageGroups
+                          analyticsContent?.analytics?.ageGroups
                         ).map(([age, percentage]) => (
                           <div
                             key={age}
@@ -1090,7 +1090,7 @@ export default function PlatformDetails({
                         Hourly Engagement
                       </h3>
                       <div className="grid grid-cols-12 gap-1 mb-3">
-                        {analyticsContent?.analytics.hourlyEngagement.map(
+                        {analyticsContent?.analytics?.hourlyEngagement.map(
                           (value, hour) => (
                             <div key={hour} className="text-center">
                               <div
@@ -1270,7 +1270,7 @@ export default function PlatformDetails({
                   <div>
                     <p className="text-sm text-gray-600">Predicted Engagement Rate</p>
                     <p className="text-2xl font-bold text-blue-600">
-                      {(predictionResult.prediction * 100).toFixed(2)}%
+                      {(predictionResult?.prediction * 100).toFixed(2)}%
                     </p>
                   </div>
                 </div>
@@ -1285,7 +1285,7 @@ export default function PlatformDetails({
                   <div className="flex-1">
                     <p className="text-sm text-gray-600 mb-2">AI Insights</p>
                     <p className="text-sm text-gray-800 leading-relaxed">
-                      {predictionResult.explanation || "Based on your content analytics and posting patterns, this prediction considers factors like timing, engagement history, and audience behavior."}
+                      {predictionResult?.explanation || "Based on your content analytics and posting patterns, this prediction considers factors like timing, engagement history, and audience behavior."}
                     </p>
                   </div>
                 </div>
@@ -1318,7 +1318,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Total Likes</p>
           <p className="text-2xl font-bold text-blue-600">
-            {currentPlatformData?.stats.totalLikes.toLocaleString()}
+            {currentPlatformData?.stats?.totalLikes.toLocaleString()}
           </p>
         </div>
         <div
@@ -1394,7 +1394,7 @@ export default function PlatformDetails({
                         });
                       }
                     });
-                    if (hours.length === 0) return "N/A";
+                    if (hours?.length === 0) return "N/A";
                     const maxHour = hours.indexOf(Math.max(...hours));
                     // Format hour as AM/PM
                     const hourStr = maxHour === 0 ? "12:00 AM" : maxHour < 12 ? `${maxHour}:00 AM` : maxHour === 12 ? "12:00 PM" : `${maxHour-12}:00 PM`;
@@ -1425,8 +1425,8 @@ export default function PlatformDetails({
                   {(() => {
                     // Average engagement rate from analytics
                     const rates = currentPlatformData?.allContent?.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
-                    if (rates.length === 0) return "N/A";
-                    const avg = rates.reduce((a,b) => a+b,0)/rates.length;
+                    if (rates?.length === 0) return "N/A";
+                    const avg = rates.reduce((a,b) => a+b,0)/rates?.length;
                     return `${avg.toFixed(1)}%`;
                   })()}
                 </p>
@@ -1437,7 +1437,7 @@ export default function PlatformDetails({
                   {(() => {
                     // Sum of all views from analytics
                     const views = currentPlatformData?.allContent?.map(c => c.analytics?.views).filter(Boolean) as number[];
-                    if (views.length === 0) return "N/A";
+                    if (views?.length === 0) return "N/A";
                     const total = views.reduce((a,b) => a+b,0);
                     return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
                   })()}
@@ -1537,7 +1537,7 @@ export default function PlatformDetails({
                 if (currentPlatformData?.stats?.comments > 200) {
                   strengths.push("Strong community interaction and discussion");
                 }
-                if (strengths.length === 0) {
+                if (strengths?.length === 0) {
                   strengths.push(
                     "Consistent content publishing",
                     "Building audience base",
@@ -1652,7 +1652,7 @@ export default function PlatformDetails({
                   const totalLikes = currentPlatformData?.stats.totalLikes;
                   const engagementRate =
                     currentPlatformData?.stats.engagementRate;
-                  const contentCount = currentPlatformData?.allContent.length;
+                  const contentCount = currentPlatformData?.allContent?.length;
 
                   if (engagementRate >= 10) {
                     return `Your ${
@@ -1692,14 +1692,14 @@ export default function PlatformDetails({
           <h3 className="text-lg font-bold text-gray-800">📋 All Content</h3>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">
-              {currentPlatformData?.allContent.length} posts
+              {currentPlatformData?.allContent?.length} posts
             </span>
           </div>
         </div>
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {currentPlatformData?.allContent.map((content) => (
+          {currentPlatformData?.allContent?.map((content) => (
             <div
               key={content.id}
               className="p-4 rounded-lg border bg-gray-50 border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer"

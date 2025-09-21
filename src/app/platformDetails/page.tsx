@@ -246,6 +246,59 @@ export default function PlatformDetails({
     null
   );
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState<boolean>(false);
+  const [isPredicting, setIsPredicting] = useState<boolean>(false);
+  const [predictionResult, setPredictionResult] = useState<any>(null);
+
+  const handlePredictEngagement = async () => {
+  // Use the first content item with analytics as an example
+    const contentWithAnalytics = currentPlatformData.allContent.find(content => content.analytics);
+    
+    if (!contentWithAnalytics?.analytics) {
+      alert('No analytics data available for prediction');
+      return;
+    }
+
+    setIsPredicting(true);
+    setPredictionResult(null);
+
+    try {
+      // Extract features from analytics data
+      const now = new Date();
+      const features = [
+        now.getHours(), // hour
+        now.getDay(), // day_of_week
+        now.getMonth() + 1, // month
+        contentWithAnalytics.analytics.likes, // likes_count
+        contentWithAnalytics.analytics.shares, // shares_count
+        contentWithAnalytics.analytics.comments, // comments_count
+        contentWithAnalytics.analytics.impressions // impressions
+      ];
+
+      console.log('Sending features to API:', features);
+
+      const response = await fetch('/api/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ features })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      setPredictionResult(result);
+      console.log('Prediction result:', result);
+      
+    } catch (error: any) {
+      console.error('Error predicting engagement:', error);
+      alert(`Failed to predict engagement: ${error.message}`);
+    } finally {
+      setIsPredicting(false);
+    }
+  };
 
   // Mock data for different platforms
   const platformData: Record<Platform, PlatformData> = {
@@ -1136,20 +1189,120 @@ export default function PlatformDetails({
 
   return (
     <div className="p-4 lg:p-8 pt-16 lg:pt-8">
-      {/* Header with Back Button */}
+      {/* Header with Back Button and Predict Button */}
       <div className="mb-6">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 mb-4 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <span>←</span>
-          Back to Overview
-        </button>
-        <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2 flex items-center gap-3">
-          <span className="text-4xl">{currentPlatformData.icon}</span>
-          {currentPlatformData.name} Analytics
-        </h1>
+        <div className="flex items-center justify-between">
+          <div>
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 mb-4 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <span>←</span>
+              Back to Overview
+            </button>
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2 flex items-center gap-3">
+              <span className="text-4xl">{currentPlatformData.icon}</span>
+              {currentPlatformData.name} Analytics
+            </h1>
+          </div>
+          
+          {/* Predict Engagement Button */}
+          <div className="flex flex-col items-end gap-2">
+            <button
+              onClick={handlePredictEngagement}
+              disabled={isPredicting}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-400 text-white px-6 py-3 rounded-lg transition-all duration-200 font-semibold text-sm flex items-center gap-2 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+            >
+              {isPredicting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Predicting...
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="w-4 h-4" />
+                  Predict Engagement
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Prediction Summary Box */}
+      {predictionResult && (
+        <div className="mb-8">
+          <div
+            className="p-6"
+            style={{
+              borderRadius: "24px",
+              background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+              border: "2px solid #0ea5e9",
+              boxSizing: "border-box",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800">Engagement Prediction</h3>
+                  <p className="text-sm text-gray-600">AI-powered forecast based on current analytics</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setPredictionResult(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Predicted Engagement Rate */}
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                    <BarChart3 className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Predicted Engagement Rate</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {(predictionResult.prediction * 100).toFixed(2)}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Explanation */}
+              <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-600 mb-2">AI Insights</p>
+                    <p className="text-sm text-gray-800 leading-relaxed">
+                      {predictionResult.explanation || "Based on your content analytics and posting patterns, this prediction considers factors like timing, engagement history, and audience behavior."}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Info */}
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <p className="text-xs text-blue-800">
+                  This prediction is based on current analytics data and may vary based on actual posting time, content quality, and audience engagement patterns.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Platform Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

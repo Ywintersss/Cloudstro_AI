@@ -1,19 +1,15 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, PutCommand, QueryCommand, GetCommand, UpdateCommand, DeleteCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { ddbDocClient } from '../dynamodb';
 import { SocialMediaPost } from '../../types/social-media';
 
-const client = new DynamoDBClient({
-  region: process.env.AWS_DYNAMODB_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-  },
-});
-
-const docClient = DynamoDBDocumentClient.from(client);
-
 export class PostRepository {
-  private tableName = process.env.DYNAMODB_POSTS_TABLE || 'cloudstro-posts';
+  private docClient: DynamoDBDocumentClient;
+  private tableName = process.env.DYNAMODB_SOCIAL_POSTS_TABLE || 'cloudstro-social-posts';
+
+  constructor() {
+    this.docClient = ddbDocClient;
+  }
 
   async createPost(userId: string, post: Omit<SocialMediaPost, 'id'>): Promise<SocialMediaPost> {
     const postId = `${post.platform}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -24,25 +20,27 @@ export class PostRepository {
       id: postId,
     };
 
+    // Clean the data to remove undefined values
+    const cleanPost = this.cleanPostData(post);
+
     const command = new PutCommand({
       TableName: this.tableName,
       Item: {
-        userId,
-        postId,
-        recordType: 'POST',
-        platform: post.platform,
-        content: post.content,
-        authorId: post.authorId,
-        authorName: post.authorName,
-        authorHandle: post.authorHandle,
-        createdAt: post.createdAt.toISOString(),
-        engagement: post.engagement,
-        media: post.media || [],
-        hashtags: post.hashtags || [],
-        mentions: post.mentions || [],
-        url: post.url,
-        isRepost: post.isRepost || false,
-        originalPostId: post.originalPostId,
+        userId, // PK
+        postId, // SK
+        platform: cleanPost.platform,
+        content: cleanPost.content,
+        authorId: cleanPost.authorId,
+        authorName: cleanPost.authorName,
+        authorHandle: cleanPost.authorHandle || '',
+        createdAt: cleanPost.createdAt.toISOString(),
+        engagement: cleanPost.engagement,
+        media: cleanPost.media || [],
+        hashtags: cleanPost.hashtags || [],
+        mentions: cleanPost.mentions || [],
+        url: cleanPost.url,
+        isRepost: cleanPost.isRepost || false,
+        originalPostId: cleanPost.originalPostId || null,
         storedAt: timestamp,
         updatedAt: timestamp,
         // Add AI analysis fields
@@ -53,31 +51,49 @@ export class PostRepository {
       },
     });
 
-    await docClient.send(command);
+    await this.docClient.send(command);
     return postItem;
+  }
+
+  private cleanPostData(post: any): any {
+    // Remove undefined values and ensure all required fields are present
+    return {
+      platform: post.platform,
+      content: post.content || '',
+      authorId: post.authorId || '',
+      authorName: post.authorName || '',
+      authorHandle: post.authorHandle || '',
+      createdAt: post.createdAt || new Date(),
+      engagement: post.engagement || { likes: 0, shares: 0, comments: 0 },
+      media: post.media || [],
+      hashtags: post.hashtags || [],
+      mentions: post.mentions || [],
+      url: post.url || '',
+      isRepost: post.isRepost || false,
+      originalPostId: post.originalPostId || null,
+    };
   }
 
   async getPostsByUser(userId: string, limit: number = 50): Promise<SocialMediaPost[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
-      KeyConditionExpression: 'userId = :userId AND begins_with(recordType, :recordType)',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
-        ':recordType': 'POST',
       },
       ScanIndexForward: false, // Get newest first
       Limit: limit,
     });
 
-    const result = await docClient.send(command);
+    const result = await this.docClient.send(command);
     return (result.Items || []).map(this.mapItemToPost);
   }
 
   async getPostsByPlatform(userId: string, platform: string, limit: number = 50): Promise<SocialMediaPost[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
-      IndexName: 'platform-index', // You'll need to create this GSI
-      KeyConditionExpression: 'userId = :userId AND platform = :platform',
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'platform = :platform',
       ExpressionAttributeValues: {
         ':userId': userId,
         ':platform': platform,
@@ -86,7 +102,7 @@ export class PostRepository {
       Limit: limit,
     });
 
-    const result = await docClient.send(command);
+    const result = await this.docClient.send(command);
     return (result.Items || []).map(this.mapItemToPost);
   }
 
@@ -115,7 +131,7 @@ export class PostRepository {
       Limit: 100,
     });
 
-    const result = await docClient.send(command);
+    const result = await this.docClient.send(command);
     return (result.Items || []).map(this.mapItemToPost);
   }
 
@@ -124,7 +140,7 @@ export class PostRepository {
       TableName: this.tableName,
       Key: {
         userId,
-        recordType: `POST#${postId}`,
+        postId,
       },
       UpdateExpression: 'SET engagement = :engagement, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
@@ -133,7 +149,7 @@ export class PostRepository {
       },
     });
 
-    await docClient.send(command);
+    await this.docClient.send(command);
   }
 
   async updatePostAIAnalysis(userId: string, postId: string, analysis: {
@@ -145,7 +161,7 @@ export class PostRepository {
       TableName: this.tableName,
       Key: {
         userId,
-        recordType: `POST#${postId}`,
+        postId,
       },
       UpdateExpression: 'SET aiAnalyzed = :analyzed, sentimentScore = :sentiment, topics = :topics, engagementPrediction = :prediction, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
@@ -157,7 +173,7 @@ export class PostRepository {
       },
     });
 
-    await docClient.send(command);
+    await this.docClient.send(command);
   }
 
   async deletePost(userId: string, postId: string): Promise<void> {
@@ -165,27 +181,26 @@ export class PostRepository {
       TableName: this.tableName,
       Key: {
         userId,
-        recordType: `POST#${postId}`,
+        postId,
       },
     });
 
-    await docClient.send(command);
+    await this.docClient.send(command);
   }
 
   async getPostsForAIAnalysis(userId: string, limit: number = 10): Promise<SocialMediaPost[]> {
     const command = new QueryCommand({
       TableName: this.tableName,
-      KeyConditionExpression: 'userId = :userId AND begins_with(recordType, :recordType)',
+      KeyConditionExpression: 'userId = :userId',
       FilterExpression: 'aiAnalyzed = :analyzed',
       ExpressionAttributeValues: {
         ':userId': userId,
-        ':recordType': 'POST',
         ':analyzed': false,
       },
       Limit: limit,
     });
 
-    const result = await docClient.send(command);
+    const result = await this.docClient.send(command);
     return (result.Items || []).map(this.mapItemToPost);
   }
 

@@ -34,12 +34,28 @@ export class SocialMediaRepository {
       updatedAt: now,
     };
 
+    // Clean the account data for DynamoDB storage
+    const cleanAccount = {
+      id: accountWithMeta.id,
+      platform: account.platform,
+      accountId: account.accountId,
+      accountName: account.accountName,
+      accountHandle: account.accountHandle || '',
+      accessToken: account.accessToken,
+      refreshToken: account.refreshToken || '',
+      tokenExpiresAt: account.tokenExpiresAt?.toISOString() || null,
+      isActive: account.isActive,
+    };
+
     await this.docClient.send(new PutCommand({
       TableName: this.accountsTable,
       Item: {
         userId: userId,
         platformAccountId: `${account.platform}#${account.accountId}`,
-        ...accountWithMeta,
+        ...cleanAccount,
+        // Convert Date objects to ISO strings for DynamoDB
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
         // GSI indexes for querying
         platform: account.platform,
         accountStatus: account.isActive ? 'active' : 'inactive',
@@ -72,7 +88,7 @@ export class SocialMediaRepository {
       UpdateExpression: 'SET accessToken = :token, updatedAt = :now' + (refreshToken ? ', refreshToken = :refresh' : ''),
       ExpressionAttributeValues: {
         ':token': accessToken,
-        ':now': new Date(),
+        ':now': new Date().toISOString(),
         ...(refreshToken && { ':refresh': refreshToken }),
       },
     }));

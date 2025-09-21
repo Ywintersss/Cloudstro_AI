@@ -623,308 +623,276 @@ export default function PlatformDetails({
           </div>
 
           {/* Analytics Content - Unified Layout */}
-          <div className="p-6">
-            <div className="space-y-6">
-              {/* Key Metrics - Full Width */}
-              <div className="p-6 bg-gray-50 rounded-2xl">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">
-                  Key Metrics
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Views</p>
-                    <p className="text-xl font-bold text-blue-500">
-                      {analyticsContent.analytics.views.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Likes</p>
-                    <p className="text-xl font-bold text-red-500">
-                      {analyticsContent.analytics.likes.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Comments</p>
-                    <p className="text-xl font-bold text-green-500">
-                      {analyticsContent.analytics.comments}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Shares</p>
-                    <p className="text-xl font-bold text-purple-500">
-                      {analyticsContent.analytics.shares}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Impressions</p>
-                    <p className="text-xl font-bold text-orange-500">
-                      {analyticsContent.analytics.impressions.toLocaleString()}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm text-gray-600">Engagement Rate</p>
-                    <p className="text-xl font-bold text-indigo-500">
-                      {analyticsContent.analytics.engagementRate}%
-                    </p>
+<div className="p-6">
+  <div className="space-y-6">
+    
+    {/* Key Metrics - Full Width */}
+    <div className="p-6 bg-gray-50 rounded-2xl">
+      <h3 className="text-lg font-bold text-gray-800 mb-4">
+        Key Metrics
+      </h3>
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Views</p>
+          <p className="text-xl font-bold text-blue-500">
+            {analyticsContent.analytics.views.toLocaleString()}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Likes</p>
+          <p className="text-xl font-bold text-red-500">
+            {analyticsContent.analytics.likes.toLocaleString()}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Comments</p>
+          <p className="text-xl font-bold text-green-500">
+            {analyticsContent.analytics.comments}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Shares</p>
+          <p className="text-xl font-bold text-purple-500">
+            {analyticsContent.analytics.shares}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Impressions</p>
+          <p className="text-xl font-bold text-orange-500">
+            {analyticsContent.analytics.impressions.toLocaleString()}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-sm text-gray-600">Engagement Rate</p>
+          <p className="text-xl font-bold text-indigo-500">
+            {analyticsContent.analytics.engagementRate}%
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Analytics Data Row with Comments */}
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Left Side - Comments Management */}
+      <div className="lg:col-span-1">
+        <div className="p-4 bg-gray-50 rounded-2xl">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-bold text-gray-800">💬 Comments</h3>
+          </div>
+
+          {/* Filter Controls */}
+          <div className="mb-4">
+            <div className="flex items-center space-x-2 mb-2">
+              <label className="text-sm font-medium text-gray-700">Filter:</label>
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="all">All</option>
+                <option value="positive">Positive</option>
+                <option value="negative">Negative</option>
+                <option value="question">Questions</option>
+              </select>
+            </div>
+            <div className="text-sm text-gray-600 mb-2">
+              {selectedComments.length} selected
+            </div>
+
+            {selectedComments.length > 0 && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Reply..."
+                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={handleBulkReply}
+                  className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                >
+                  Reply
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Comments List */}
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {filteredComments.map((comment) => (
+              <div
+                key={comment.id}
+                className={`p-2 rounded border text-xs transition-colors ${
+                  selectedComments.includes(comment.id)
+                    ? "bg-blue-50 border-blue-300"
+                    : "bg-white border-gray-200"
+                }`}
+              >
+                <div className="flex items-start space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedComments.includes(comment.id)}
+                    onChange={() => handleCommentSelect(comment.id)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-medium text-gray-800">
+                        @{comment.user}
+                      </span>
+                      <span className="text-xs text-gray-500">{comment.time}</span>
+                    </div>
+                    <p className="text-gray-700 mb-1">{comment.comment}</p>
+                    <span
+                      className={`px-2 py-1 text-xs rounded ${
+                        comment.type === "positive"
+                          ? "bg-green-100 text-green-800"
+                          : comment.type === "negative"
+                          ? "bg-red-100 text-red-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {comment.type}
+                    </span>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-              {/* Analytics Data Row with Comments */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Left Side - Comments Management */}
-                <div className="lg:col-span-1">
-                  <div className="p-4 bg-gray-50 rounded-2xl">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-bold text-gray-800">
-                        💬 Comments
-                      </h3>
+      {/* Right Side - Analytics Data */}
+      <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Top Countries */}
+          <div className="p-6 bg-gray-50 rounded-2xl">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              Top Countries
+            </h3>
+            <div className="space-y-3">
+              {analyticsContent.analytics.topCountries.map((country, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">{country}</span>
+                  <div className="flex items-center">
+                    <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                      <div
+                        className="h-2 bg-blue-500 rounded-full"
+                        style={{ width: `${(3 - index) * 33}%` }}
+                      ></div>
                     </div>
+                    <span className="text-xs text-gray-500 w-8">
+                      {(3 - index) * 33}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-                    {/* Filter Controls */}
-                    <div className="mb-4">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <label className="text-sm font-medium text-gray-700">
-                          Filter:
-                        </label>
-                        <select
-                          value={filterType}
-                          onChange={(e) => setFilterType(e.target.value)}
-                          className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
-                        >
-                          <option value="all">All</option>
-                          <option value="positive">Positive</option>
-                          <option value="negative">Negative</option>
-                          <option value="question">Questions</option>
-                        </select>
-                      </div>
-                      <div className="text-sm text-gray-600 mb-2">
-                        {selectedComments.length} selected
-                      </div>
-
-                      {selectedComments.length > 0 && (
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={replyText}
-                            onChange={(e) => setReplyText(e.target.value)}
-                            placeholder="Reply..."
-                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
-                          />
-                          <button
-                            onClick={handleBulkReply}
-                            className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                          >
-                            Reply
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Comments List */}
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {filteredComments.map((comment) => (
+          {/* Age Demographics */}
+          <div className="p-6 bg-gray-50 rounded-2xl">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              Age Demographics
+            </h3>
+            <div className="space-y-3">
+              {Object.entries(analyticsContent.analytics.ageGroups).map(
+                ([age, percentage]) => (
+                  <div key={age} className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">{age}</span>
+                    <div className="flex items-center">
+                      <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
                         <div
-                          key={comment.id}
-                          className={`p-2 rounded border text-xs transition-colors ${
-                            selectedComments.includes(comment.id)
-                              ? "bg-blue-50 border-blue-300"
-                              : "bg-white border-gray-200"
-                          }`}
-                        >
-                          <div className="flex items-start space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={selectedComments.includes(comment.id)}
-                              onChange={() => handleCommentSelect(comment.id)}
-                              className="mt-1"
-                            />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-1">
-                                <span className="font-medium text-gray-800">
-                                  @{comment.user}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {comment.time}
-                                </span>
-                              </div>
-                              <p className="text-gray-700 mb-1">
-                                {comment.comment}
-                              </p>
-                              <span
-                                className={`px-2 py-1 text-xs rounded ${
-                                  comment.type === "positive"
-                                    ? "bg-green-100 text-green-800"
-                                    : comment.type === "negative"
-                                    ? "bg-red-100 text-red-800"
-                                    : "bg-yellow-100 text-yellow-800"
-                                }`}
-                              >
-                                {comment.type}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                          className="h-2 bg-green-500 rounded-full"
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-xs text-gray-500 w-8">
+                        {percentage}%
+                      </span>
                     </div>
                   </div>
+                )
+              )}
+            </div>
+          </div>
+
+          {/* Hourly Engagement */}
+          <div className="p-6 bg-gray-50 rounded-2xl">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">
+              Hourly Engagement
+            </h3>
+            <div className="grid grid-cols-12 gap-1 mb-3">
+              {analyticsContent.analytics.hourlyEngagement.map((value, hour) => (
+                <div key={hour} className="text-center">
+                  <div
+                    className="w-full bg-blue-500 rounded-t mb-1"
+                    style={{
+                      height: `${Math.max(value * 1.5, 2)}px`,
+                    }}
+                  ></div>
+                  <span className="text-xs text-gray-500">{hour}</span>
                 </div>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500">
+              Peak engagement varies by content
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                {/* Right Side - Analytics Data */}
-                <div className="lg:col-span-3">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Top Countries */}
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        Top Countries
-                      </h3>
-                      <div className="space-y-3">
-                        {analyticsContent.analytics.topCountries.map(
-                          (country, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between"
-                            >
-                              <span className="text-sm text-gray-700">
-                                {country}
-                              </span>
-                              <div className="flex items-center">
-                                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                                  <div
-                                    className="h-2 bg-blue-500 rounded-full"
-                                    style={{ width: `${(3 - index) * 33}%` }}
-                                  ></div>
-                                </div>
-                                <span className="text-xs text-gray-500 w-8">
-                                  {(3 - index) * 33}%
-                                </span>
-                              </div>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Age Demographics */}
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        Age Demographics
-                      </h3>
-                      <div className="space-y-3">
-                        {Object.entries(
-                          analyticsContent.analytics.ageGroups
-                        ).map(([age, percentage]) => (
-                          <div
-                            key={age}
-                            className="flex items-center justify-between"
-                          >
-                            <span className="text-sm text-gray-700">{age}</span>
-                            <div className="flex items-center">
-                              <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                                <div
-                                  className="h-2 bg-green-500 rounded-full"
-                                  style={{ width: `${percentage}%` }}
-                                ></div>
-                              </div>
-                              <span className="text-xs text-gray-500 w-8">
-                                {percentage}%
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Hourly Engagement */}
-                    <div className="p-6 bg-gray-50 rounded-2xl">
-                      <h3 className="text-lg font-bold text-gray-800 mb-4">
-                        Hourly Engagement
-                      </h3>
-                      <div className="grid grid-cols-12 gap-1 mb-3">
-                        {analyticsContent.analytics.hourlyEngagement.map(
-                          (value, hour) => (
-                            <div key={hour} className="text-center">
-                              <div
-                                className="w-full bg-blue-500 rounded-t mb-1"
-                                style={{
-                                  height: `${Math.max(value * 1.5, 2)}px`,
-                                }}
-                              ></div>
-                              <span className="text-xs text-gray-500">
-                                {hour}
-                              </span>
-                            </div>
-                          )
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-500">
-                        Peak engagement varies by content
-                      </p>
-                    </div>
-                  </div>
-                </div>
+    {/* Bottom Row - Top Posts and Success Factors */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Top Posts */}
+      <div className="p-4 bg-gray-50 rounded-2xl">
+        <h3 className="text-lg font-bold text-gray-800 mb-4">🏆 Top Posts</h3>
+        <div className="space-y-2">
+          {currentPlatformData.topPosts.slice(0, 3).map((post, index) => (
+            <div
+              key={index}
+              className="p-2 bg-white rounded border border-gray-200"
+            >
+              <p className="text-sm font-medium text-gray-800 mb-1">
+                {post.title}
+              </p>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>{post.time}</span>
+                <span className="text-blue-600">{post.engagement}</span>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-              {/* Bottom Row - Top Posts and Success Factors */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Top Posts */}
-                <div className="p-4 bg-gray-50 rounded-2xl">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">
-                    🏆 Top Posts
-                  </h3>
-                  <div className="space-y-2">
-                    {currentPlatformData.topPosts
-                      .slice(0, 3)
-                      .map((post, index) => (
-                        <div
-                          key={index}
-                          className="p-2 bg-white rounded border border-gray-200"
-                        >
-                          <p className="text-sm font-medium text-gray-800 mb-1">
-                            {post.title}
-                          </p>
-                          <div className="flex justify-between text-xs text-gray-500">
-                            <span>{post.time}</span>
-                            <span className="text-blue-600">
-                              {post.engagement}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-
-                {/* Success Factors */}
-                <div className="p-4 bg-gray-50 rounded-2xl">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">
-                    📈 Success
-                  </h3>
-                  <div className="space-y-2">
-                    {currentPlatformData.successFactors
-                      .slice(0, 3)
-                      .map((factor, index) => (
-                        <div
-                          key={index}
-                          className="p-2 bg-white rounded border border-gray-200"
-                        >
-                          <div className="flex items-start gap-2">
-                            <div className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <div>
-                              <p className="text-sm font-medium text-gray-800 mb-1">
-                                {factor.factor}
-                              </p>
-                              <p className="text-xs text-gray-600">
-                                {factor.description}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+      {/* Success Factors */}
+      <div className="p-4 bg-gray-50 rounded-2xl">
+        <h3 className="text-lg font-bold text-gray-800 mb-4">📈 Success</h3>
+        <div className="space-y-2">
+          {currentPlatformData.successFactors.slice(0, 3).map((factor, index) => (
+            <div
+              key={index}
+              className="p-2 bg-white rounded border border-gray-200"
+            >
+              <div className="flex items-start gap-2">
+                <div className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div>
+                  <p className="text-sm font-medium text-gray-800 mb-1">
+                    {factor.factor}
+                  </p>
+                  <p className="text-xs text-gray-600">{factor.description}</p>
                 </div>
               </div>
             </div>
-          </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </div>
     );

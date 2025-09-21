@@ -252,7 +252,7 @@ export default function PlatformDetails({
 
   const handlePredictEngagement = async () => {
   // Use the first content item with analytics as an example
-    const contentWithAnalytics = currentPlatformData.allContent.find(content => content.analytics);
+    const contentWithAnalytics = currentPlatformData?.allContent.find(content => content.analytics);
     
     if (!contentWithAnalytics?.analytics) {
       alert('No analytics data available for prediction');
@@ -269,10 +269,10 @@ export default function PlatformDetails({
         now.getHours(), // hour
         now.getDay(), // day_of_week
         now.getMonth() + 1, // month
-        contentWithAnalytics.analytics.likes, // likes_count
-        contentWithAnalytics.analytics.shares, // shares_count
-        contentWithAnalytics.analytics.comments, // comments_count
-        contentWithAnalytics.analytics.impressions // impressions
+        contentWithAnalytics?.analytics?.likes, // likes_count
+        contentWithAnalytics?.analytics?.shares, // shares_count
+        contentWithAnalytics?.analytics?.comments, // comments_count
+        contentWithAnalytics?.analytics?.impressions // impressions
       ];
 
       console.log('Sending features to API:', features);
@@ -749,7 +749,7 @@ export default function PlatformDetails({
 
   const currentPlatformData = platformData[platform];
 
-  const filteredComments = currentPlatformData.comments.filter((comment) => {
+  const filteredComments = currentPlatformData?.comments.filter((comment) => {
     if (filterType === "all") return true;
     return comment.type === filterType;
   });
@@ -883,37 +883,37 @@ export default function PlatformDetails({
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Views</p>
                     <p className="text-xl font-bold text-blue-500">
-                      {analyticsContent.analytics.views.toLocaleString()}
+                      {analyticsContent?.analytics?.views.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Likes</p>
                     <p className="text-xl font-bold text-red-500">
-                      {analyticsContent.analytics.likes.toLocaleString()}
+                      {analyticsContent?.analytics?.likes.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Comments</p>
                     <p className="text-xl font-bold text-green-500">
-                      {analyticsContent.analytics.comments}
+                      {analyticsContent?.analytics?.comments}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Shares</p>
                     <p className="text-xl font-bold text-purple-500">
-                      {analyticsContent.analytics.shares}
+                      {analyticsContent?.analytics?.shares}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Impressions</p>
                     <p className="text-xl font-bold text-orange-500">
-                      {analyticsContent.analytics.impressions.toLocaleString()}
+                      {analyticsContent?.analytics?.impressions.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Engagement Rate</p>
                     <p className="text-xl font-bold text-indigo-500">
-                      {analyticsContent.analytics.engagementRate}%
+                      {analyticsContent?.analytics?.engagementRate}%
                     </p>
                   </div>
                 </div>
@@ -972,7 +972,7 @@ export default function PlatformDetails({
 
                     {/* Comments List */}
                     <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {filteredComments.map((comment) => (
+                      {filteredComments?.map((comment) => (
                         <div
                           key={comment.id}
                           className={`p-2 rounded border text-xs transition-colors ${
@@ -984,32 +984,32 @@ export default function PlatformDetails({
                           <div className="flex items-start space-x-2">
                             <input
                               type="checkbox"
-                              checked={selectedComments.includes(comment.id)}
-                              onChange={() => handleCommentSelect(comment.id)}
+                              checked={selectedComments.includes(comment?.id)}
+                              onChange={() => handleCommentSelect(comment?.id)}
                               className="mt-1"
                             />
                             <div className="flex-1">
                               <div className="flex justify-between items-start mb-1">
                                 <span className="font-medium text-gray-800">
-                                  @{comment.user}
+                                  @{comment?.user}
                                 </span>
                                 <span className="text-xs text-gray-500">
-                                  {comment.time}
+                                  {comment?.time}
                                 </span>
                               </div>
                               <p className="text-gray-700 mb-1">
-                                {comment.comment}
+                                {comment?.comment}
                               </p>
                               <span
                                 className={`px-2 py-1 text-xs rounded ${
-                                  comment.type === "positive"
+                                  comment?.type === "positive"
                                     ? "bg-green-100 text-green-800"
-                                    : comment.type === "negative"
+                                    : comment?.type === "negative"
                                     ? "bg-red-100 text-red-800"
                                     : "bg-yellow-100 text-yellow-800"
                                 }`}
                               >
-                                {comment.type}
+                                {comment?.type}
                               </span>
                             </div>
                           </div>
@@ -1332,7 +1332,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Comments</p>
           <p className="text-2xl font-bold text-green-600">
-            {currentPlatformData.stats.comments}
+            {currentPlatformData?.stats?.comments}
           </p>
         </div>
         <div
@@ -1505,9 +1505,9 @@ export default function PlatformDetails({
               <div className="flex justify-between items-center text-white/90">
                 <span>Audience Engagement:</span>
                 <span className="font-bold text-purple-300">
-                  {currentPlatformData.stats.comments > 300
+                  {currentPlatformData?.stats?.comments > 300
                     ? "Very Active"
-                    : currentPlatformData.stats.comments > 150
+                    : currentPlatformData?.stats?.comments > 150
                     ? "Active"
                     : "Moderate"}
                 </span>
@@ -1524,17 +1524,17 @@ export default function PlatformDetails({
             <div className="space-y-2">
               {(() => {
                 const strengths = [];
-                if (currentPlatformData.stats.engagementRate > 8) {
+                if (currentPlatformData?.stats?.engagementRate > 8) {
                   strengths.push(
                     "High engagement rate drives strong community connection"
                   );
                 }
-                if (currentPlatformData.stats.shares > 150) {
+                if (currentPlatformData?.stats?.shares > 150) {
                   strengths.push(
                     "Content highly shareable, expanding organic reach"
                   );
                 }
-                if (currentPlatformData.stats.comments > 200) {
+                if (currentPlatformData?.stats?.comments > 200) {
                   strengths.push("Strong community interaction and discussion");
                 }
                 if (strengths.length === 0) {
@@ -1563,21 +1563,21 @@ export default function PlatformDetails({
             <div className="space-y-2">
               {(() => {
                 const recommendations = [];
-                if (currentPlatformData.stats.engagementRate < 5) {
+                if (currentPlatformData?.stats?.engagementRate < 5) {
                   recommendations.push(
                     "Focus on more interactive content formats"
                   );
-                } else if (currentPlatformData.stats.engagementRate < 8) {
+                } else if (currentPlatformData?.stats?.engagementRate < 8) {
                   recommendations.push(
                     "Experiment with posting times and content types"
                   );
                 }
-                if (currentPlatformData.stats.shares < 100) {
+                if (currentPlatformData?.stats?.shares < 100) {
                   recommendations.push(
                     "Add clear call-to-actions to boost sharing"
                   );
                 }
-                if (currentPlatformData.stats.comments < 150) {
+                if (currentPlatformData?.stats?.comments < 150) {
                   recommendations.push(
                     "Ask more questions to spark discussions"
                   );
@@ -1649,26 +1649,26 @@ export default function PlatformDetails({
             <div className="p-4 border-t border-white/10">
               <p className="text-white/90 text-sm leading-relaxed">
                 {(() => {
-                  const totalLikes = currentPlatformData.stats.totalLikes;
+                  const totalLikes = currentPlatformData?.stats.totalLikes;
                   const engagementRate =
-                    currentPlatformData.stats.engagementRate;
-                  const contentCount = currentPlatformData.allContent.length;
+                    currentPlatformData?.stats.engagementRate;
+                  const contentCount = currentPlatformData?.allContent.length;
 
                   if (engagementRate >= 10) {
                     return `Your ${
-                      currentPlatformData.name
+                      currentPlatformData?.name
                     } presence is performing exceptionally well with ${totalLikes.toLocaleString()} total likes and ${engagementRate}% engagement rate. Your ${contentCount} pieces of content demonstrate strong audience connection and viral potential. This platform should be a key focus area for content expansion.`;
                   } else if (engagementRate >= 7) {
                     return `${
-                      currentPlatformData.name
+                      currentPlatformData?.name
                     } shows solid performance with ${totalLikes.toLocaleString()} total likes across ${contentCount} posts. Your ${engagementRate}% engagement rate indicates good audience resonance. With strategic optimization, this platform has strong growth potential.`;
                   } else if (engagementRate >= 5) {
                     return `Your ${
-                      currentPlatformData.name
+                      currentPlatformData?.name
                     } account shows moderate performance with ${totalLikes.toLocaleString()} total likes. The ${engagementRate}% engagement rate suggests room for improvement through content optimization and audience targeting strategies.`;
                   } else {
                     return `${
-                      currentPlatformData.name
+                      currentPlatformData?.name
                     } presents an opportunity for growth. While you have ${contentCount} posts and ${totalLikes.toLocaleString()} total likes, the ${engagementRate}% engagement rate indicates potential for significant improvement through strategic content refinement.`;
                   }
                 })()}

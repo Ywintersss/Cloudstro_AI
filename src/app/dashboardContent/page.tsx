@@ -1,9 +1,15 @@
 "use client";
 import React from "react";
+import DemoSetup from "../../components/dashboard/demo-setup";
 
 export default function DashboardContent() {
   return (
     <div className="p-4 lg:p-8 pt-16 lg:pt-8">
+      {/* Demo Setup for Hackathon */}
+      <div className="mb-8">
+        <DemoSetup />
+      </div>
+
       <div className="mb-8">
         <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2">
           Welcome Back!

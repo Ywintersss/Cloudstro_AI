@@ -1,21 +1,21 @@
 import { TwitterService } from './twitter.service';
-import { FacebookService, InstagramService } from './facebook.service';
-import { RedNoteService } from './rednote.service';
+import { FacebookService } from './facebook.service';
+import { YouTubeService } from './youtube.service';
 import { TikTokService } from './tiktok.service';
+import { MockDataService } from './mock-data.service';
 import { SocialMediaPost, SocialMediaAccount, PlatformMetrics } from '../../types/social-media';
+import { useMockData } from '../../config/development';
 
 export class SocialMediaManager {
   private twitterService: TwitterService;
   private facebookService: FacebookService;
-  private instagramService: InstagramService;
-  private rednoteService: RedNoteService;
+  private youtubeService: YouTubeService;
   private tiktokService: TikTokService;
 
   constructor() {
     this.twitterService = new TwitterService();
     this.facebookService = new FacebookService();
-    this.instagramService = new InstagramService();
-    this.rednoteService = new RedNoteService();
+    this.youtubeService = new YouTubeService();
     this.tiktokService = new TikTokService();
   }
 
@@ -27,25 +27,34 @@ export class SocialMediaManager {
       if (!account.isActive) continue;
 
       try {
-        switch (account.platform) {
-          case 'twitter':
-            promises.push(this.twitterService.getUserTweets(account.accountHandle || account.accountId, count));
-            break;
-          case 'facebook':
-            promises.push(this.facebookService.getPagePosts(account.accountId, count));
-            break;
-          case 'instagram':
-            promises.push(this.instagramService.getBusinessPosts(count));
-            break;
-          case 'rednote':
-            promises.push(this.rednoteService.getUserNotes(account.accountId, count));
-            break;
-          case 'tiktok':
-            promises.push(this.tiktokService.getUserVideos(account.accountId, count));
-            break;
+        // Check if we should use mock data for this platform
+        const shouldUseMock = useMockData[account.platform as keyof typeof useMockData];
+        
+        if (shouldUseMock) {
+          // Use mock data for demo purposes
+          console.log(`Using mock data for ${account.platform} (demo mode)`);
+          promises.push(Promise.resolve(MockDataService.generateMockPosts(account.platform, count)));
+        } else {
+          // Use real API services
+          switch (account.platform) {
+            case 'twitter':
+              promises.push(this.twitterService.getUserTweets(account.accountHandle || account.accountId, count));
+              break;
+            case 'facebook':
+              promises.push(this.facebookService.getPagePosts(account.accountId, count));
+              break;
+            case 'youtube':
+              promises.push(this.youtubeService.getChannelVideos(account.accountId, count));
+              break;
+            case 'tiktok':
+              promises.push(this.tiktokService.getUserVideos(account.accountId, count));
+              break;
+          }
         }
       } catch (error) {
         console.error(`Error fetching posts for ${account.platform}:`, error);
+        // Fallback to mock data if real API fails
+        promises.push(Promise.resolve(MockDataService.generateMockPosts(account.platform, count)));
       }
     }
 
@@ -63,15 +72,21 @@ export class SocialMediaManager {
 
   async getPostsByPlatform(platform: string, accountId: string, count: number = 50): Promise<SocialMediaPost[]> {
     try {
+      // Check if we should use mock data for this platform
+      const shouldUseMock = useMockData[platform as keyof typeof useMockData];
+      
+      if (shouldUseMock) {
+        console.log(`Using mock data for ${platform} (demo mode)`);
+        return MockDataService.generateMockPosts(platform, count);
+      }
+
       switch (platform) {
         case 'twitter':
           return await this.twitterService.getUserTweets(accountId, count);
         case 'facebook':
           return await this.facebookService.getPagePosts(accountId, count);
-        case 'instagram':
-          return await this.instagramService.getBusinessPosts(count);
-        case 'rednote':
-          return await this.rednoteService.getUserNotes(accountId, count);
+        case 'youtube':
+          return await this.youtubeService.getChannelVideos(accountId, count);
         case 'tiktok':
           return await this.tiktokService.getUserVideos(accountId, count);
         default:
@@ -79,7 +94,9 @@ export class SocialMediaManager {
       }
     } catch (error) {
       console.error(`Error fetching posts from ${platform}:`, error);
-      throw error;
+      // Fallback to mock data if real API fails
+      console.log(`Falling back to mock data for ${platform}`);
+      return MockDataService.generateMockPosts(platform, count);
     }
   }
 
@@ -89,16 +106,32 @@ export class SocialMediaManager {
 
     for (const platform of platforms) {
       try {
-        switch (platform) {
-          case 'twitter':
-            promises.push(this.twitterService.searchTweets(query, count));
-            break;
-          // Other platforms don't have public search APIs or require special permissions
-          default:
-            console.warn(`Search not supported for platform: ${platform}`);
+        // Check if we should use mock data for this platform
+        const shouldUseMock = useMockData[platform as keyof typeof useMockData];
+        
+        if (shouldUseMock) {
+          console.log(`Using mock search data for ${platform} (demo mode)`);
+          const mockPosts = MockDataService.generateMockPosts(platform, count);
+          // Filter mock posts to somewhat match the query (for demo purposes)
+          const filteredPosts = mockPosts.filter(post => 
+            post.content.toLowerCase().includes(query.toLowerCase()) ||
+            post.hashtags.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+          );
+          promises.push(Promise.resolve(filteredPosts.length > 0 ? filteredPosts : mockPosts.slice(0, Math.min(5, count))));
+        } else {
+          switch (platform) {
+            case 'twitter':
+              promises.push(this.twitterService.searchTweets(query, count));
+              break;
+            // Other platforms don't have public search APIs or require special permissions
+            default:
+              console.warn(`Search not supported for platform: ${platform}`);
+          }
         }
       } catch (error) {
         console.error(`Error searching posts on ${platform}:`, error);
+        // Fallback to mock data
+        promises.push(Promise.resolve(MockDataService.generateMockPosts(platform, 5)));
       }
     }
 
@@ -138,16 +171,8 @@ export class SocialMediaManager {
           case 'facebook':
             postId = await this.facebookService.postToFacebook(account.accountId, content, mediaUrl);
             break;
-          case 'instagram':
-            if (!mediaUrl) {
-              throw new Error('Instagram requires media');
-            }
-            postId = await this.instagramService.postToInstagram(content, mediaUrl);
-            break;
-          case 'rednote':
-            const images = mediaUrl ? [mediaUrl] : [];
-            postId = await this.rednoteService.postToRedNote(content.substring(0, 50), content, images);
-            break;
+          case 'youtube':
+            throw new Error('YouTube posting requires video upload and special permissions');
           case 'tiktok':
             throw new Error('TikTok posting requires special permissions');
           default:
@@ -247,5 +272,44 @@ export class SocialMediaManager {
     }
 
     return platformTiming;
+  }
+
+  async getPlatformMetrics(platform: string): Promise<PlatformMetrics> {
+    try {
+      // Check if we should use mock data for this platform
+      const shouldUseMock = useMockData[platform as keyof typeof useMockData];
+      
+      if (shouldUseMock) {
+        console.log(`Using mock metrics for ${platform} (demo mode)`);
+        return MockDataService.generateMockMetrics(platform);
+      }
+
+      // For real implementations, you would call platform-specific analytics APIs here
+      // For now, return mock data as fallback
+      console.log(`Real analytics not implemented for ${platform}, using mock data`);
+      return MockDataService.generateMockMetrics(platform);
+    } catch (error) {
+      console.error(`Error fetching metrics for ${platform}:`, error);
+      return MockDataService.generateMockMetrics(platform);
+    }
+  }
+
+  async getAnalyticsInsights(platform: string) {
+    try {
+      // Check if we should use mock data for this platform
+      const shouldUseMock = useMockData[platform as keyof typeof useMockData];
+      
+      if (shouldUseMock) {
+        console.log(`Using mock insights for ${platform} (demo mode)`);
+        return MockDataService.generateAnalyticsInsights(platform);
+      }
+
+      // For real implementations, you would call AI analysis services here
+      console.log(`Real insights not implemented for ${platform}, using mock data`);
+      return MockDataService.generateAnalyticsInsights(platform);
+    } catch (error) {
+      console.error(`Error generating insights for ${platform}:`, error);
+      return MockDataService.generateAnalyticsInsights(platform);
+    }
   }
 }

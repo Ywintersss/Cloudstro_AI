@@ -1,7 +1,7 @@
 // Types for standardized social media data across platforms
 export interface SocialMediaPost {
   id: string;
-  platform: 'twitter' | 'facebook' | 'instagram' | 'rednote' | 'tiktok';
+  platform: 'twitter' | 'facebook' | 'youtube' | 'tiktok';
   content: string;
   authorId: string;
   authorName: string;
@@ -27,7 +27,7 @@ export interface SocialMediaPost {
 
 export interface SocialMediaAccount {
   id: string;
-  platform: 'twitter' | 'facebook' | 'instagram' | 'rednote' | 'tiktok';
+  platform: 'twitter' | 'facebook' | 'youtube' | 'tiktok';
   accountId: string;
   accountName: string;
   accountHandle?: string;

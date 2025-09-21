@@ -6,11 +6,11 @@ const userRepository = new UserRepository();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, username, fullName, subscription = 'free' } = body;
+    const { email, username, fullName, password, subscription = 'free' } = body;
 
-    if (!email || !username || !fullName) {
+    if (!email || !username || !fullName || !password) {
       return NextResponse.json(
-        { error: 'Email, username, and full name are required' },
+        { error: 'Email, username, full name, and password are required' },
         { status: 400 }
       );
     }
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
       email,
       username,
       fullName,
+      password,
       subscription,
       socialAccountsConnected: [],
       aiPreferences: {

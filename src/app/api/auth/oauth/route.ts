@@ -25,11 +25,8 @@ export async function GET(request: NextRequest) {
       case 'facebook':
         authUrl = generateFacebookAuthUrl(userId);
         break;
-      case 'instagram':
-        authUrl = generateInstagramAuthUrl(userId);
-        break;
-      case 'linkedin':
-        authUrl = generateLinkedInAuthUrl(userId);
+      case 'youtube':
+        authUrl = generateYouTubeAuthUrl(userId);
         break;
       case 'tiktok':
         authUrl = generateTikTokAuthUrl(userId);
@@ -78,34 +75,22 @@ function generateFacebookAuthUrl(userId: string): string {
   const params = new URLSearchParams({
     client_id: process.env.FACEBOOK_APP_ID || '',
     redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/facebook`,
-    scope: 'pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic',
+    scope: 'pages_show_list,pages_read_engagement,pages_manage_posts',
     state: `facebook_${userId}_${Date.now()}`,
     response_type: 'code',
   });
   return `${baseUrl}?${params.toString()}`;
 }
 
-function generateInstagramAuthUrl(userId: string): string {
-  // Instagram uses Facebook OAuth
-  const baseUrl = 'https://www.facebook.com/v18.0/dialog/oauth';
+function generateYouTubeAuthUrl(userId: string): string {
+  const baseUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
   const params = new URLSearchParams({
-    client_id: process.env.FACEBOOK_APP_ID || '',
-    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/instagram`,
-    scope: 'instagram_basic,instagram_content_publish,pages_show_list',
-    state: `instagram_${userId}_${Date.now()}`,
+    client_id: process.env.YOUTUBE_CLIENT_ID || '',
+    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/youtube`,
+    scope: 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube',
     response_type: 'code',
-  });
-  return `${baseUrl}?${params.toString()}`;
-}
-
-function generateLinkedInAuthUrl(userId: string): string {
-  const baseUrl = 'https://www.linkedin.com/oauth/v2/authorization';
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: process.env.LINKEDIN_CLIENT_ID || '',
-    redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/linkedin`,
-    scope: 'r_liteprofile r_emailaddress w_member_social',
-    state: `linkedin_${userId}_${Date.now()}`,
+    access_type: 'offline',
+    state: `youtube_${userId}_${Date.now()}`,
   });
   return `${baseUrl}?${params.toString()}`;
 }

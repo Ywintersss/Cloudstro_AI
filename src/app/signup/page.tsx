@@ -130,6 +130,7 @@ export default function SignupPage() {
           email: "",
           password: "",
           confirmPassword: "",
+          submit: "",
         });
 
         // Optionally redirect to login page after a delay

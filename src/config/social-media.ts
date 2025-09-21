@@ -11,14 +11,10 @@ export interface SocialMediaConfig {
     appSecret: string;
     accessToken: string;
   };
-  instagram: {
-    accessToken: string;
-    businessAccountId: string;
-  };
-  rednote: {
+  youtube: {
+    apiKey: string;
     clientId: string;
     clientSecret: string;
-    accessToken: string;
   };
   tiktok: {
     clientKey: string;
@@ -40,14 +36,10 @@ export const socialMediaConfig: SocialMediaConfig = {
     appSecret: process.env.FACEBOOK_APP_SECRET || '',
     accessToken: process.env.FACEBOOK_ACCESS_TOKEN || '',
   },
-  instagram: {
-    accessToken: process.env.INSTAGRAM_ACCESS_TOKEN || '',
-    businessAccountId: process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID || '',
-  },
-  rednote: {
-    clientId: process.env.REDNOTE_CLIENT_ID || '',
-    clientSecret: process.env.REDNOTE_CLIENT_SECRET || '',
-    accessToken: process.env.REDNOTE_ACCESS_TOKEN || '',
+  youtube: {
+    apiKey: process.env.YOUTUBE_API_KEY || '',
+    clientId: process.env.YOUTUBE_CLIENT_ID || '',
+    clientSecret: process.env.YOUTUBE_CLIENT_SECRET || '',
   },
   tiktok: {
     clientKey: process.env.TIKTOK_CLIENT_KEY || '',
@@ -67,15 +59,12 @@ export const API_ENDPOINTS = {
     pagePosts: '/{page-id}/posts',
     pageInfo: '/{page-id}',
   },
-  instagram: {
-    baseUrl: 'https://graph.instagram.com',
-    businessMedia: '/{user-id}/media',
-    mediaInfo: '/{media-id}',
-  },
-  rednote: {
-    baseUrl: 'https://api.xiaohongshu.com/ark/open_platform',
-    posts: '/v1/note/list',
-    profile: '/v1/user/info',
+  youtube: {
+    baseUrl: 'https://www.googleapis.com/youtube/v3',
+    videos: '/videos',
+    channels: '/channels',
+    search: '/search',
+    playlistItems: '/playlistItems',
   },
   tiktok: {
     baseUrl: 'https://open-api.tiktok.com/platform/oauth/connect',

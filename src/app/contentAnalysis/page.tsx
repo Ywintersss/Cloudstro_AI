@@ -1,10 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { Send, Sparkles, BarChart3 } from "lucide-react";
+import Image from "next/image";
 
 interface Message {
   id: number;
-  type: 'user' | 'assistant';
+  type: "user" | "assistant";
   content: string;
   timestamp: Date;
 }
@@ -17,10 +18,11 @@ export default function ContentAnalysisPage({
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      type: 'assistant',
-      content: "Hello! I'm your AI content analyst. I can help you understand what makes content go viral and provide detailed insights about your posts. You can either paste a URL or upload content for analysis.",
-      timestamp: new Date()
-    }
+      type: "assistant",
+      content:
+        "Hello! I'm your AI content analyst. I can help you understand what makes content go viral and provide detailed insights about your posts. You can either paste a URL or upload content for analysis.",
+      timestamp: new Date(),
+    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -38,23 +40,27 @@ export default function ContentAnalysisPage({
   useEffect(() => {
     if (analysisContent && analysisContent.analytics) {
       // Prevent duplicate analysis for the same content
-      setMessages(prev => {
+      setMessages((prev) => {
         const alreadyExists = prev.some(
-          m => m.type === 'user' && m.content.includes(`Analyze this content: "${analysisContent.title}"`)
+          (m) =>
+            m.type === "user" &&
+            m.content.includes(
+              `Analyze this content: "${analysisContent.title}"`
+            )
         );
         if (alreadyExists) return prev;
         const baseId = Date.now();
         const analysisMessage: Message = {
           id: baseId,
-          type: 'user',
+          type: "user",
           content: `Analyze this content: "${analysisContent.title}" from ${analysisContent.date}`,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
         const responseMessage: Message = {
           id: baseId + 1000,
-          type: 'assistant',
+          type: "assistant",
           content: generateDetailedAnalysis(analysisContent),
-          timestamp: new Date()
+          timestamp: new Date(),
         };
         return [...prev, analysisMessage, responseMessage];
       });
@@ -63,31 +69,41 @@ export default function ContentAnalysisPage({
 
   const generateDetailedAnalysis = (content: any) => {
     const { analytics } = content;
-    
+
     return `# Content Analysis: "${content.title}"
 
 ## Performance Overview
-This ${content.type.toLowerCase()} content achieved exceptional results with a **${analytics.engagementRate}% engagement rate**, significantly above industry standards. Here's my detailed breakdown:
+This ${content.type.toLowerCase()} content achieved exceptional results with a **${
+      analytics.engagementRate
+    }% engagement rate**, significantly above industry standards. Here's my detailed breakdown:
 
 ## Key Performance Metrics
 - **Views**: ${analytics.views.toLocaleString()} impressions
-- **Engagement**: ${analytics.likes.toLocaleString()} likes, ${analytics.comments} comments, ${analytics.shares} shares
+- **Engagement**: ${analytics.likes.toLocaleString()} likes, ${
+      analytics.comments
+    } comments, ${analytics.shares} shares
 - **Reach**: ${analytics.impressions.toLocaleString()} total impressions
 - **Performance Score**: ${Math.round(analytics.engagementRate * 10)}/100
 
 ## Why This Content Succeeded
 
 ### 1. Strong Engagement Fundamentals
-The ${analytics.engagementRate}% engagement rate indicates your audience found genuine value in this content. This is particularly impressive given the ${analytics.views.toLocaleString()} view count, suggesting strong content-audience fit.
+The ${
+      analytics.engagementRate
+    }% engagement rate indicates your audience found genuine value in this content. This is particularly impressive given the ${analytics.views.toLocaleString()} view count, suggesting strong content-audience fit.
 
 ### 2. Community Response
-With ${analytics.comments} comments, this content sparked meaningful conversation. High comment rates typically indicate:
+With ${
+      analytics.comments
+    } comments, this content sparked meaningful conversation. High comment rates typically indicate:
 - Controversial or thought-provoking elements
 - Clear call-to-action prompts
 - Topics that resonate with audience pain points
 
 ### 3. Shareability Factor
-${analytics.shares} shares demonstrate the content's viral potential. Content gets shared when it:
+${
+  analytics.shares
+} shares demonstrate the content's viral potential. Content gets shared when it:
 - Provides clear value to the sharer's network
 - Aligns with personal or professional brand
 - Contains quotable or memorable elements
@@ -95,10 +111,14 @@ ${analytics.shares} shares demonstrate the content's viral potential. Content ge
 ## Content Strategy Insights
 
 ### Optimal Timing
-Posted on ${content.date}, this content likely benefited from strategic timing. The engagement pattern suggests it caught your audience during high-activity periods.
+Posted on ${
+      content.date
+    }, this content likely benefited from strategic timing. The engagement pattern suggests it caught your audience during high-activity periods.
 
 ### Content Format Impact
-The "${content.type}" format worked exceptionally well for your audience. This format typically performs well because it:
+The "${
+      content.type
+    }" format worked exceptionally well for your audience. This format typically performs well because it:
 - Breaks complex information into digestible pieces
 - Maintains visual interest throughout
 - Encourages sequential engagement
@@ -106,9 +126,13 @@ The "${content.type}" format worked exceptionally well for your audience. This f
 ## Recommendations for Future Content
 
 ### 1. Replicate Success Elements
-- **Content Structure**: The format that drove ${analytics.engagementRate}% engagement should be a template for future posts
+- **Content Structure**: The format that drove ${
+      analytics.engagementRate
+    }% engagement should be a template for future posts
 - **Topic Authority**: This subject matter clearly resonates with your audience
-- **Engagement Hooks**: Whatever prompted ${analytics.comments} comments should be incorporated into future content
+- **Engagement Hooks**: Whatever prompted ${
+      analytics.comments
+    } comments should be incorporated into future content
 
 ### 2. Scale the Approach
 - Create a series building on this topic
@@ -206,19 +230,19 @@ Would you like me to help you create a content calendar based on these successfu
     const baseId = Date.now();
     const userMessage: Message = {
       id: baseId,
-      type: 'user',
+      type: "user",
       content: inputValue,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
     setIsAnalyzing(true);
 
     // Simulate AI processing
     setTimeout(() => {
-      const isUrl = inputValue.includes('http') || inputValue.includes('www.');
-      const responseContent = isUrl 
+      const isUrl = inputValue.includes("http") || inputValue.includes("www.");
+      const responseContent = isUrl
         ? generateAnalysisFromUrl(inputValue)
         : `I understand you want to analyze: "${inputValue}". 
 
@@ -234,18 +258,18 @@ What would you like to focus on?`;
 
       const responseMessage: Message = {
         id: baseId + 1000, // Ensure unique ID
-        type: 'assistant',
+        type: "assistant",
         content: responseContent,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, responseMessage]);
+      setMessages((prev) => [...prev, responseMessage]);
       setIsAnalyzing(false);
     }, 1500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
@@ -258,8 +282,17 @@ What would you like to focus on?`;
         <div className="flex items-center gap-3">
           <div className="mb-6 flex items-center gap-3">
             {/* Small logo */}
-            <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
-            <h1 className="text-xl lg:text-2xl font-bold text-gray-800 mb-0">Content Analysis</h1>
+            {/* Next.js Image component for logo */}
+            <Image
+              src="/logo.svg"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8"
+            />
+            <h1 className="text-xl lg:text-2xl font-bold text-gray-800 mb-0">
+              Content Analysis
+            </h1>
           </div>
         </div>
       </div>
@@ -270,34 +303,63 @@ What would you like to focus on?`;
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                message.type === "user" ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-3xl rounded-2xl p-4 ${
-                  message.type === 'user'
-                    ? 'bg-blue-600 text-white ml-12'
-                    : 'bg-white text-gray-800 mr-12 shadow-sm border border-gray-200'
+                  message.type === "user"
+                    ? "bg-blue-600 text-white ml-12"
+                    : "bg-white text-gray-800 mr-12 shadow-sm border border-gray-200"
                 }`}
               >
-                {message.type === 'assistant' && (
+                {message.type === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-purple-600" />
-                    <span className="text-xs font-medium text-purple-600">AI Analyst</span>
+                    <Image
+                      src="/logo.svg"
+                      alt="Logo"
+                      width={32}
+                      height={32}
+                      className="w-8 h-8"
+                    />
+                    <span className="text-xs font-medium text-purple-600">
+                      AI Analyst
+                    </span>
                   </div>
                 )}
-                <div className={`prose prose-sm max-w-none ${message.type === 'user' ? 'prose-invert' : ''}`}>
-                  {message.content.includes('#') ? (
-                    <div 
-                      dangerouslySetInnerHTML={{ 
+                <div
+                  className={`prose prose-sm max-w-none ${
+                    message.type === "user" ? "prose-invert" : ""
+                  }`}
+                >
+                  {message.content.includes("#") ? (
+                    <div
+                      dangerouslySetInnerHTML={{
                         __html: message.content
-                          .replace(/# (.*$)/gm, '<h1 class="text-xl font-bold mb-3 text-gray-900">$1</h1>')
-                          .replace(/## (.*$)/gm, '<h2 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$2</h2>')
-                          .replace(/### (.*$)/gm, '<h3 class="text-md font-medium mb-2 mt-3 text-gray-700">$3</h3>')
-                          .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
-                          .replace(/- (.*$)/gm, '<div class="flex items-start gap-2 mb-1"><span class="text-blue-600 mt-1">•</span><span>$1</span></div>')
+                          .replace(
+                            /# (.*$)/gm,
+                            '<h1 class="text-xl font-bold mb-3 text-gray-900">$1</h1>'
+                          )
+                          .replace(
+                            /## (.*$)/gm,
+                            '<h2 class="text-lg font-semibold mb-2 mt-4 text-gray-800">$2</h2>'
+                          )
+                          .replace(
+                            /### (.*$)/gm,
+                            '<h3 class="text-md font-medium mb-2 mt-3 text-gray-700">$3</h3>'
+                          )
+                          .replace(
+                            /\*\*(.*?)\*\*/g,
+                            '<strong class="font-semibold text-gray-900">$1</strong>'
+                          )
+                          .replace(
+                            /- (.*$)/gm,
+                            '<div class="flex items-start gap-2 mb-1"><span class="text-blue-600 mt-1">•</span><span>$1</span></div>'
+                          )
                           .replace(/\n\n/g, '<div class="mb-3"></div>')
-                          .replace(/\n/g, '<br>')
-                      }} 
+                          .replace(/\n/g, "<br>"),
+                      }}
                     />
                   ) : (
                     <p className="whitespace-pre-wrap">{message.content}</p>
@@ -309,19 +371,29 @@ What would you like to focus on?`;
               </div>
             </div>
           ))}
-          
+
           {isAnalyzing && (
             <div className="flex justify-start">
               <div className="bg-white rounded-2xl p-4 mr-12 shadow-sm border border-gray-200">
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-4 h-4 text-purple-600 animate-pulse" />
-                  <span className="text-xs font-medium text-purple-600">AI Analyst</span>
+                  <span className="text-xs font-medium text-purple-600">
+                    AI Analyst
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <span className="text-sm text-gray-600 ml-2">Analyzing content...</span>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.1s" }}
+                  ></div>
+                  <div
+                    className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                    style={{ animationDelay: "0.2s" }}
+                  ></div>
+                  <span className="text-sm text-gray-600 ml-2">
+                    Analyzing content...
+                  </span>
                 </div>
               </div>
             </div>
@@ -343,14 +415,15 @@ What would you like to focus on?`;
                 className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none min-h-[48px] max-h-32"
                 rows={1}
                 disabled={isAnalyzing}
-                style={{ 
-                  scrollbarWidth: 'none', 
-                  msOverflowStyle: 'none'
+                style={{
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
                 }}
                 onInput={(e) => {
                   const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = Math.min(target.scrollHeight, 128) + 'px';
+                  target.style.height = "auto";
+                  target.style.height =
+                    Math.min(target.scrollHeight, 128) + "px";
                 }}
               />
             </div>
@@ -363,7 +436,8 @@ What would you like to focus on?`;
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2 text-center">
-            Paste URLs from LinkedIn, Twitter, Instagram, TikTok, or describe your content for detailed analysis
+            Paste URLs from LinkedIn, Twitter, Instagram, TikTok, or describe
+            your content for detailed analysis
           </p>
         </div>
       </div>

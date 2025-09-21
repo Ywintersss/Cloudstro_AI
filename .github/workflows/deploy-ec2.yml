@@ -2,10 +2,33 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ main, production ]
+    branches: [ main, production, staging ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, production ]
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - main
+        - staging
+        - develop
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+
+env:
+  DEPLOY_BRANCH: ${{ github.event.inputs.branch || 'production' }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'production' }}
 
 jobs:
   deploy:
@@ -14,6 +37,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ env.DEPLOY_BRANCH }}
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -52,28 +77,30 @@ jobs:
 
     - name: Upload to S3
       run: |
-        aws s3 cp deployment.tar.gz s3://${{ secrets.DEPLOYMENT_BUCKET }}/cloudstro-ai/deployment-${{ github.sha }}.tar.gz
+        aws s3 cp deployment.tar.gz s3://${{ secrets.DEPLOYMENT_BUCKET }}/cloudstro-ai/${{ env.ENVIRONMENT }}/deployment-${{ github.sha }}.tar.gz
 
     - name: Deploy to EC2 via CodeDeploy
       run: |
         aws deploy create-deployment \
           --application-name cloudstro-ai \
-          --deployment-group-name production \
-          --s3-location bucket=${{ secrets.DEPLOYMENT_BUCKET }},key=cloudstro-ai/deployment-${{ github.sha }}.tar.gz,bundleType=tgz \
+          --deployment-group-name ${{ env.ENVIRONMENT }} \
+          --s3-location bucket=${{ secrets.DEPLOYMENT_BUCKET }},key=cloudstro-ai/${{ env.ENVIRONMENT }}/deployment-${{ github.sha }}.tar.gz,bundleType=tgz \
           --deployment-config-name CodeDeployDefault.AllAtOnceEC2 \
-          --description "Deployment of commit ${{ github.sha }}"
+          --description "Deployment of branch ${{ env.DEPLOY_BRANCH }} (commit ${{ github.sha }}) to ${{ env.ENVIRONMENT }}"
 
     # Alternative: Direct SSH deployment (less secure but simpler)
     - name: Deploy via SSH (Alternative)
       if: false  # Set to true to use SSH deployment instead of CodeDeploy
       uses: appleboy/ssh-action@v1.0.3
       with:
-        host: ${{ secrets.EC2_HOST }}
+        host: ${{ env.ENVIRONMENT == 'production' && secrets.EC2_HOST_PROD || secrets.EC2_HOST_STAGING }}
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd /var/www/cloudstro-ai
-          git pull origin main
+          git fetch origin
+          git checkout ${{ env.DEPLOY_BRANCH }}
+          git pull origin ${{ env.DEPLOY_BRANCH }}
           npm ci --only=production
           npm run build
           pm2 restart all
@@ -88,6 +115,11 @@ jobs:
       run: |
         if [ "${{ needs.deploy.result }}" == "success" ]; then
           echo "✅ Deployment successful!"
+          echo "Branch: ${{ env.DEPLOY_BRANCH }}"
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          echo "Commit: ${{ github.sha }}"
         else
           echo "❌ Deployment failed!"
+          echo "Branch: ${{ env.DEPLOY_BRANCH }}"
+          echo "Environment: ${{ env.ENVIRONMENT }}"
         fi

@@ -2,6 +2,14 @@
 
 cd /var/www/cloudstro-ai
 
+# Check if we should switch branches
+if [ ! -z "$DEPLOY_BRANCH" ]; then
+    echo "Switching to branch: $DEPLOY_BRANCH"
+    git fetch origin
+    git checkout $DEPLOY_BRANCH
+    git pull origin $DEPLOY_BRANCH
+fi
+
 # Install dependencies
 echo "Installing dependencies..."
 npm ci --only=production

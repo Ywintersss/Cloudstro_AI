@@ -11,8 +11,20 @@ This guide will help you deploy CloudStro AI from AWS Amplify to EC2.
    ```bash
    wget https://raw.githubusercontent.com/your-repo/cloudstro-ai/main/deploy-ec2.sh
    chmod +x deploy-ec2.sh
+   
+   # Deploy production branch (default)
    sudo ./deploy-ec2.sh
+   
+   # Deploy specific branch
+   PRODUCTION_BRANCH=staging sudo ./deploy-ec2.sh
    ```
+
+### Branch Management:
+- **Production**: `PRODUCTION_BRANCH=production ./deploy-ec2.sh`
+- **Staging**: `PRODUCTION_BRANCH=staging ./deploy-ec2.sh`
+- **Development**: `PRODUCTION_BRANCH=main ./deploy-ec2.sh`
+
+📖 **See [BRANCH_DEPLOYMENT_GUIDE.md](./BRANCH_DEPLOYMENT_GUIDE.md) for detailed branch management**
 
 ### Option 2: Docker Deployment
 

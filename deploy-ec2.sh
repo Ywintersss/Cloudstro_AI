@@ -42,9 +42,16 @@ sudo mkdir -p /var/www/cloudstro-ai
 sudo chown ec2-user:ec2-user /var/www/cloudstro-ai
 cd /var/www/cloudstro-ai
 
-# Clone repository (replace with your repo URL)
-echo "📥 Cloning repository..."
-git clone https://github.com/Ywintersss/Cloudstro_AI.git .
+# Configuration
+REPO_URL="https://github.com/Ywintersss/Cloudstro_AI.git"
+PRODUCTION_BRANCH="${PRODUCTION_BRANCH:-tongli}"  # Default to 'production', can be overridden
+
+# Clone repository and checkout production branch
+echo "📥 Cloning repository and checking out $PRODUCTION_BRANCH branch..."
+git clone $REPO_URL .
+git checkout $PRODUCTION_BRANCH
+
+echo "✅ Using branch: $(git branch --show-current)"
 
 # Create environment file
 echo "🔧 Setting up environment variables..."
@@ -110,3 +117,7 @@ echo "4. Restart services: sudo systemctl restart nginx && pm2 restart all"
 echo "5. Check status: pm2 status && sudo systemctl status nginx"
 echo ""
 echo "🌐 Your application should be available at: http://your-ec2-ip"
+echo ""
+echo "🔧 To deploy a different branch in the future:"
+echo "   PRODUCTION_BRANCH=your-branch-name ./deploy-ec2.sh"
+echo "   Example: PRODUCTION_BRANCH=staging ./deploy-ec2.sh"

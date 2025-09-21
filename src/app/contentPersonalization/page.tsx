@@ -45,7 +45,6 @@ export default function PersonalizationsContent() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [apiResponse, setApiResponse] = useState<any>(null);
   const [error, setError] = useState<string>("");
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({
@@ -63,12 +62,6 @@ export default function PersonalizationsContent() {
     }));
   };
 
-  const addDebugLog = (message: string) => {
-    const timestamp = new Date().toLocaleTimeString();
-    setDebugInfo((prev) => [...prev, `[${timestamp}] ${message}`]);
-    console.log(`DEBUG: ${message}`);
-  };
-
   const handleCheckboxChange = (field: keyof FormData) => {
     setFormData((prev) => ({
       ...prev,
@@ -81,17 +74,12 @@ export default function PersonalizationsContent() {
     setError("");
     setApiResponse(null);
 
-    addDebugLog("🚀 Starting thumbnail generation");
-    addDebugLog(`📋 Payload size: ${JSON.stringify(formData).length} chars`);
-    addDebugLog(`🌐 Request URL: ${window.location.origin}/api/test_predict`);
-
     console.log(
       "Sending request with data:",
       JSON.stringify(formData, null, 2)
     );
 
     try {
-      addDebugLog("⏳ Sending fetch request...");
 
       const response = await fetch("/api/test_predict", {
         method: "POST",
@@ -103,25 +91,17 @@ export default function PersonalizationsContent() {
         }),
       });
 
-      addDebugLog(`📥 Response: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
         const errorText = await response.text();
-        addDebugLog(`❌ Error response: ${errorText}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      addDebugLog("✅ Success! Data received");
       setApiResponse(data);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
-      addDebugLog(`💥 Error: ${errorMessage}`);
-
-      if (err instanceof Error && err.message.includes("Failed to fetch")) {
-        addDebugLog("🔍 Network issue - check if backend is running");
-      }
 
       setError(errorMessage);
       console.error("Error generating thumbnail:", err);
@@ -186,26 +166,6 @@ export default function PersonalizationsContent() {
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
           Error: {error}
-        </div>
-      )}
-
-      {/* Debug Log - ADD THIS AFTER RESPONSE DISPLAY */}
-      {debugInfo.length > 0 && (
-        <div className="mb-4 p-4 bg-gray-50 border border-gray-300 rounded-lg">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="font-bold text-gray-800">Debug Log:</h3>
-            <button 
-              onClick={() => setDebugInfo([])}
-              className="px-2 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700"
-            >
-              Clear
-            </button>
-          </div>
-          <div className="bg-black text-green-400 p-3 rounded font-mono text-sm h-32 overflow-y-auto">
-            {debugInfo.map((log, index) => (
-              <div key={index} className="mb-1">{log}</div>
-            ))}
-          </div>
         </div>
       )}
 
@@ -390,7 +350,7 @@ export default function PersonalizationsContent() {
                     }
                   />
                   <span className="text-sm text-gray-700">
-                    Auto-generate thumbnails
+                    Auto-generate
                   </span>
                 </div>
                 <div className="flex items-center space-x-3">

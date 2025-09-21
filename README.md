@@ -1,1 +1,1 @@
-# Cloudstro_AI
+# SocialHeat AI

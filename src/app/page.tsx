@@ -11,12 +11,12 @@ export default function Home() {
           logo={
             <Image
               src="/logo.svg"
-              alt="CloudStro Logo"
+              alt="SocialHeat AI Logo"
               width={32}
               height={32}
             />
           }
-          name="CloudStro"
+          name="SocialHeat AI"
           homeUrl="/"
           mobileLinks={[
             { text: "Features", href: "/features" },
@@ -39,7 +39,7 @@ export default function Home() {
           {/* Hero Section - Full Page */}
           <div className="pb-12 px-4 flex flex-col justify-center items-center min-h-screen">
             <h1 className="text-6xl font-bold text-center text-gray-800 mb-6 transform transition-all duration-1000 hover:scale-105">
-              CloudStro Social Media Booster
+              SocialHeat AI Social Media Booster
             </h1>
             <p className="text-xl text-center text-gray-600 mb-12 max-w-2xl leading-relaxed">
               Boost your social media presence with AI-powered tools that
@@ -95,7 +95,7 @@ export default function Home() {
           <section className="relative min-h-screen flex items-center justify-center bg-white shadow-lg">
             <div className="max-w-4xl mx-auto px-8 text-center">
               <h2 className="text-5xl font-bold text-gray-800 mb-8 transform transition-all duration-700 hover:translate-y-2">
-                Why Choose CloudStro?
+                Why Choose SocialHeat AI?
               </h2>
               <div className="grid md:grid-cols-2 gap-8 mt-12">
                 <div className="bg-gray-50 p-8 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:-translate-y-2 shadow-md">
@@ -150,7 +150,7 @@ export default function Home() {
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="bg-gray-50 p-8 rounded-xl transform hover:scale-105 transition-all duration-300 shadow-md">
                   <p className="text-gray-700 text-lg italic mb-6">
-                    "CloudStro transformed my social media game. My engagement
+                    "SocialHeat AI transformed my social media game. My engagement
                     rates doubled in just 30 days, and I'm saving hours every
                     week on content planning."
                   </p>
@@ -190,7 +190,7 @@ export default function Home() {
               </h2>
               <p className="text-xl text-gray-600 mb-12 leading-relaxed">
                 Join thousands of creators and businesses who are already seeing
-                incredible results with CloudStro.
+                incredible results with SocialHeat AI.
               </p>
               <div className="space-y-4 md:space-y-0 md:space-x-6 md:flex md:justify-center">
                 <Link

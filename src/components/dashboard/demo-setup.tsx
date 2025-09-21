@@ -51,12 +51,36 @@ export default function DemoSetup({ onDemoDataCreated }: DemoSetupProps) {
   const generateDemoData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/social-media/demo?platform=twitter&count=15');
+      // Get current user from localStorage or context
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!user.userId) {
+        alert('Please log in first to create demo data');
+        return;
+      }
+
+      const response = await fetch('/api/social-media/posts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.userId,
+          action: 'populate_demo',
+          platforms: ['twitter', 'facebook', 'youtube', 'tiktok'],
+          postsPerPlatform: 15
+        }),
+      });
+      
       const result = await response.json();
       
       if (response.ok) {
-        setDemoData(result.data);
-        alert('Demo data generated successfully! Check the dashboard for sample posts and analytics.');
+        setDemoData(result);
+        alert(`Successfully created ${result.totalPosts} demo posts in DynamoDB! 
+        
+✅ ${result.totalPosts} posts stored in database
+✅ Data persists across app restarts  
+✅ Ready for AI analysis with Bedrock/SageMaker`);
       } else {
         alert(`Error: ${result.error}`);
       }
@@ -71,21 +95,39 @@ export default function DemoSetup({ onDemoDataCreated }: DemoSetupProps) {
   const generateMultiPlatformData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/social-media/demo', {
+      // Get current user from localStorage or context
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!user.userId) {
+        alert('Please log in first to create demo data');
+        return;
+      }
+
+      const response = await fetch('/api/social-media/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          platforms: ['twitter', 'facebook', 'youtube', 'tiktok']
+          userId: user.userId,
+          action: 'populate_demo',
+          platforms: ['twitter', 'facebook', 'youtube', 'tiktok'],
+          postsPerPlatform: 20 // More posts for full demo
         }),
       });
       
       const result = await response.json();
       
       if (response.ok) {
-        setDemoData(result.data);
-        alert('Multi-platform demo data generated! Your dashboard now shows sample data from all platforms.');
+        setDemoData(result);
+        alert(`🎉 Complete Demo Dataset Created!
+
+📊 ${result.totalPosts} posts stored in DynamoDB
+🔗 4 platforms: Twitter, Facebook, YouTube, TikTok  
+🧠 Ready for AI analysis with AWS Bedrock & SageMaker
+💾 Data persists and can be queried from database
+
+Perfect for your hackathon demo! 🚀`);
       } else {
         alert(`Error: ${result.error}`);
       }
@@ -123,7 +165,7 @@ export default function DemoSetup({ onDemoDataCreated }: DemoSetupProps) {
               variant="outline"
               className="border-purple-300 text-purple-600 hover:bg-purple-50"
             >
-              {isLoading ? 'Generating...' : '2. Generate Sample Posts'}
+              {isLoading ? 'Creating...' : '2. Store Posts in DB'}
             </Button>
             
             <Button
@@ -131,7 +173,7 @@ export default function DemoSetup({ onDemoDataCreated }: DemoSetupProps) {
               disabled={isLoading}
               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
             >
-              {isLoading ? 'Loading...' : '3. Full Demo Data'}
+              {isLoading ? 'Processing...' : '3. Full DB + AI Demo'}
             </Button>
           </div>
           

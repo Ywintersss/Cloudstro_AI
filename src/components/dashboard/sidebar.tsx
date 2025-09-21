@@ -57,9 +57,9 @@ export default function Sidebar({
         </button>
 
         <div className="mb-8 flex items-center space-x-3">
-          <Image src="/logo.svg" alt="CloudStro Logo" width={40} height={40} />
+          <Image src="/logo.svg" alt="SocialHeat AI Logo" width={40} height={40} />
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">CloudStro</h2>
+            <h2 className="text-2xl font-bold text-gray-800">SocialHeat AI</h2>
             <p className="text-sm text-gray-600">Social Media Booster</p>
           </div>
         </div>

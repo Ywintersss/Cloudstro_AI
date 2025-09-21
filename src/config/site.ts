@@ -1,5 +1,5 @@
 // src/config/site.ts
 export const siteConfig = {
-  name: "Launch UI",
+  name: "SocialHeat AI",
   url: "https://example.com",
 };

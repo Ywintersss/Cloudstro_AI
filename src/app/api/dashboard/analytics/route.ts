@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       analytics = {
         totalPosts: 24,
         engagementRate: 4.2,
-        topHashtags: ['#CloudStro', '#AI', '#SocialMedia', '#Analytics', '#Tech'],
+        topHashtags: ['#SocialHeatAI', '#AI', '#SocialMedia', '#Analytics', '#Tech'],
         bestPostingTime: '3:00 PM',
         bestPostingDay: 'Wednesday',
         averageEngagement: 156,

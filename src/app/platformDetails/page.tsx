@@ -1228,19 +1228,65 @@ export default function PlatformDetails({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
               <div className="text-center">
                 <p className="text-sm text-gray-600">Best Time</p>
-                <p className="text-lg font-bold text-blue-600">2:00 PM</p>
+                <p className="text-lg font-bold text-blue-600">
+                  {(() => {
+                    // Find the most active hour from all analytics
+                    const hours: number[] = [];
+                    currentPlatformData.allContent.forEach(content => {
+                      if (content.analytics?.hourlyEngagement) {
+                        content.analytics.hourlyEngagement.forEach((val, hour) => {
+                          hours[hour] = (hours[hour] || 0) + val;
+                        });
+                      }
+                    });
+                    if (hours.length === 0) return "N/A";
+                    const maxHour = hours.indexOf(Math.max(...hours));
+                    // Format hour as AM/PM
+                    const hourStr = maxHour === 0 ? "12:00 AM" : maxHour < 12 ? `${maxHour}:00 AM` : maxHour === 12 ? "12:00 PM" : `${maxHour-12}:00 PM`;
+                    return hourStr;
+                  })()}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Peak Day</p>
-                <p className="text-lg font-bold text-green-600">Tuesday</p>
+                <p className="text-lg font-bold text-green-600">
+                  {(() => {
+                    // Find the most common day from all content dates
+                    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    const dayCounts: Record<string, number> = {};
+                    currentPlatformData.allContent.forEach(content => {
+                      const d = new Date(content.date);
+                      const day = days[d.getDay()];
+                      dayCounts[day] = (dayCounts[day] || 0) + 1;
+                    });
+                    const peakDay = Object.entries(dayCounts).sort((a,b) => b[1]-a[1])[0];
+                    return peakDay ? peakDay[0] : "N/A";
+                  })()}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Avg Engagement</p>
-                <p className="text-lg font-bold text-purple-600">8.7%</p>
+                <p className="text-lg font-bold text-purple-600">
+                  {(() => {
+                    // Average engagement rate from analytics
+                    const rates = currentPlatformData.allContent.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
+                    if (rates.length === 0) return "N/A";
+                    const avg = rates.reduce((a,b) => a+b,0)/rates.length;
+                    return `${avg.toFixed(1)}%`;
+                  })()}
+                </p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-gray-600">Reach</p>
-                <p className="text-lg font-bold text-orange-600">12.3K</p>
+                <p className="text-lg font-bold text-orange-600">
+                  {(() => {
+                    // Sum of all views from analytics
+                    const views = currentPlatformData.allContent.map(c => c.analytics?.views).filter(Boolean) as number[];
+                    if (views.length === 0) return "N/A";
+                    const total = views.reduce((a,b) => a+b,0);
+                    return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
+                  })()}
+                </p>
               </div>
             </div>
           </div>

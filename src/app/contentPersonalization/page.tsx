@@ -83,7 +83,7 @@ export default function PersonalizationsContent() {
 
     addDebugLog("🚀 Starting thumbnail generation");
     addDebugLog(`📋 Payload size: ${JSON.stringify(formData).length} chars`);
-    addDebugLog(`🌐 Request URL: ${window.location.origin}/api/predict`);
+    addDebugLog(`🌐 Request URL: ${window.location.origin}/api/test_predict`);
 
     console.log(
       "Sending request with data:",
@@ -93,7 +93,7 @@ export default function PersonalizationsContent() {
     try {
       addDebugLog("⏳ Sending fetch request...");
 
-      const response = await fetch("/api/predict", {
+      const response = await fetch("/api/test_predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ export default function PersonalizationsContent() {
     // );
 
     try {
-      const response = await fetch("/api/predict", {
+      const response = await fetch("/api/test_predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

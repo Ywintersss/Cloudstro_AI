@@ -27,38 +27,38 @@ const bedrockClient = new BedrockRuntimeClient({
 // ---- HANDLER ----
 export async function POST(req: Request) {
   console.log("Received request at /api/predict");
-  console.log("Body:", req.body);
-  try {
-    // const { input } = await req.json();
-    // if (!input) {
-    //     return NextResponse.json({ error: "Missing input" }, { status: 400 });
-    // }
+  console.log("Body:", req);
+  // try {
+  //   // const { input } = await req.json();
+  //   // if (!input) {
+  //   //     return NextResponse.json({ error: "Missing input" }, { status: 400 });
+  //   // }
 
-    // 1. Call SageMaker
-    const predictionResults = await callSagemaker("input");
+  //   // 1. Call SageMaker
+  //   const predictionResults = await callSagemaker("input");
 
-    const rawPrediction = predictionResults.Body
-      ? Buffer.from(predictionResults.Body as Uint8Array).toString()
-      : "{}";
+  //   const rawPrediction = predictionResults.Body
+  //     ? Buffer.from(predictionResults.Body as Uint8Array).toString()
+  //     : "{}";
 
-    // 2. Call Bedrock
-    const bedrockResponse = await callBedrock("HI");
+  //   // 2. Call Bedrock
+  //   const bedrockResponse = await callBedrock("HI");
 
-    const bedrockText = bedrockResponse.body
-      ? Buffer.from(bedrockResponse.body as Uint8Array).toString()
-      : "{}";
+  //   const bedrockText = bedrockResponse.body
+  //     ? Buffer.from(bedrockResponse.body as Uint8Array).toString()
+  //     : "{}";
 
-    // return NextResponse.json({ prediction: JSON.parse(rawPrediction) });
+  //   // return NextResponse.json({ prediction: JSON.parse(rawPrediction) });
 
-    // 3. Return combined
-    return NextResponse.json({
-      prediction: JSON.parse(rawPrediction),
-      explanation: bedrockText,
-    });
-  } catch (err: any) {
-    console.error("Error in /predict:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
+  //   // 3. Return combined
+  //   return NextResponse.json({
+  //     prediction: JSON.parse(rawPrediction),
+  //     explanation: bedrockText,
+  //   });
+  // } catch (err: any) {
+  //   console.error("Error in /predict:", err);
+  //   return NextResponse.json({ error: err.message }, { status: 500 });
+  // }
 }
 
 // ---- HELPERS ----

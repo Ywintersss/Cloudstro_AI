@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BarChart3, X, Minimize2, Sparkles, TrendingUp } from "lucide-react";
 
 type Platform = "x" | "facebook" | "youtube";
 
@@ -64,11 +65,178 @@ interface PlatformData {
 interface PlatformDetailsProps {
   platform: Platform;
   onBack: () => void;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
 }
+
+// AI Analysis Widget Component for Analytics Modal
+const AIAnalysisWidget = ({
+  analyticsContent,
+  platform,
+  onNavigateToAnalysis,
+}: {
+  analyticsContent: ContentItem;
+  platform: Platform;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  const handleAnalysisRedirect = () => {
+    console.log(
+      `Redirecting to analysis with ${platform} content data:`,
+      analyticsContent
+    );
+
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(analyticsContent);
+    } else {
+      alert(
+        `Would redirect to /analysis with detailed AI insights for: "${analyticsContent.title}"`
+      );
+    }
+  };
+
+  const getInsightPreview = () => {
+    if (!analyticsContent.analytics)
+      return "No analytics data available for AI analysis.";
+
+    const { engagementRate, views, likes } = analyticsContent.analytics;
+    if (engagementRate > 10) {
+      return `High-performing content! ${engagementRate}% engagement rate suggests strong audience connection. Let me analyze what made this successful.`;
+    } else if (engagementRate > 5) {
+      return `Solid performance with ${engagementRate}% engagement. I can identify optimization opportunities from your ${views.toLocaleString()} views.`;
+    } else {
+      return `This content has growth potential. With ${views.toLocaleString()} views but ${engagementRate}% engagement, let's find improvement strategies.`;
+    }
+  };
+
+  return (
+    <>
+      <div className="fixed bottom-4 right-4 z-50">
+        {!isOpen && (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="cursor-pointer w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-pulse hover:animate-none"
+          >
+            <div className="relative">
+              <BarChart3 className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-yellow-300" />
+            </div>
+          </button>
+        )}
+
+        {isOpen && (
+          <div
+            className={`bg-white rounded-xl shadow-2xl transition-all duration-300 ${
+              isMinimized ? "w-80 h-12" : "w-80 h-auto max-h-[400px]"
+            } border border-gray-200`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-t-xl flex items-center justify-between">
+              <h3 className="font-semibold flex items-center text-sm">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                AI Content Analysis
+              </h3>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <Minimize2 className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsMinimized(false);
+                  }}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {!isMinimized && (
+              <div className="p-4 space-y-3">
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-xs text-gray-800 mb-2 flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3 text-purple-600" />
+                    Content: {analyticsContent.title}
+                  </h4>
+                  {analyticsContent.analytics && (
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="text-center">
+                        <p className="font-bold text-purple-600">
+                          {analyticsContent.analytics.views.toLocaleString()}
+                        </p>
+                        <p className="text-gray-600">Views</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-blue-600">
+                          {analyticsContent.analytics.engagementRate}%
+                        </p>
+                        <p className="text-gray-600">Engagement</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-green-600">
+                          {analyticsContent.analytics.likes}
+                        </p>
+                        <p className="text-gray-600">Likes</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-500" />
+                    AI Insight:
+                  </label>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-2">
+                    <p className="text-xs text-gray-800 leading-relaxed">
+                      {getInsightPreview()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <button
+                    onClick={handleAnalysisRedirect}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-3 rounded-lg transition-all duration-200 font-medium text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <BarChart3 className="w-3 h-3" />
+                    Deep AI Analysis
+                  </button>
+
+                  <div className="text-xs text-gray-500 text-center">
+                    Get comprehensive insights for this content
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-blue-800 mb-1">
+                    Analysis includes:
+                  </h4>
+                  <ul className="text-xs text-blue-700 space-y-0.5">
+                    <li>• Performance vs similar content</li>
+                    <li>• Audience engagement patterns</li>
+                    <li>• Optimization recommendations</li>
+                    <li>• Content strategy insights</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default function PlatformDetails({
   platform,
   onBack,
+  onNavigateToAnalysis,
 }: PlatformDetailsProps) {
   const [selectedComments, setSelectedComments] = useState<number[]>([]);
   const [replyText, setReplyText] = useState<string>("");
@@ -561,6 +729,12 @@ export default function PlatformDetails({
     setSelectedComments([]);
   };
 
+  const handleNavigateToAnalysis = (content: ContentItem) => {
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(content);
+    }
+  };
+
   // Analytics Modal Component
   const AnalyticsModal = () => {
     if (!isAnalyticsOpen || !analyticsContent) return null;
@@ -596,26 +770,46 @@ export default function PlatformDetails({
           {/* Modal Header */}
           <div className="sticky top-0 bg-white rounded-t-3xl border-b border-gray-200 p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                  <span className="text-3xl">{currentPlatformData.icon}</span>
-                  Analytics
-                </h2>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-sm font-medium text-gray-700">
-                    {analyticsContent.title}
-                  </span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {analyticsContent.type}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {analyticsContent.date}
-                  </span>
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="flex flex-row gap-5">
+                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                      <span className="text-3xl">
+                        {currentPlatformData.icon}
+                      </span>
+                      Analytics
+                    </h2>
+                    {/* AI Widget Button in Header */}
+                    <button
+                      onClick={() => {
+                        if (analyticsContent) {
+                          handleNavigateToAnalysis(analyticsContent);
+                        }
+                      }}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm flex items-center gap-2 shadow-md hover:shadow-lg"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4" />
+                      AI Analysis
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {analyticsContent.title}
+                    </span>
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {analyticsContent.type}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {analyticsContent.date}
+                    </span>
+                  </div>
                 </div>
               </div>
+
               <button
                 onClick={closeAnalytics}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold ml-4"
               >
                 ×
               </button>
@@ -926,6 +1120,15 @@ export default function PlatformDetails({
             </div>
           </div>
         </div>
+
+        {/* AI Analysis Widget - Only shows when analytics modal is open */}
+        {analyticsContent && (
+          <AIAnalysisWidget
+            analyticsContent={analyticsContent}
+            platform={platform}
+            onNavigateToAnalysis={onNavigateToAnalysis}
+          />
+        )}
       </div>
     );
   };

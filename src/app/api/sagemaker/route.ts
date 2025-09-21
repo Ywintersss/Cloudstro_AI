@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { SageMakerRuntimeClient, InvokeEndpointCommand } from "@aws-sdk/client-sagemaker-runtime";
 
-const sm = new SageMakerRuntimeClient({ region: process.env.AWS_REGION });
+const sm = new SageMakerRuntimeClient({ region: process.env.REGION_2 });
 
 export async function POST(req: Request) {
     try {

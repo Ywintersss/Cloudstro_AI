@@ -1,0 +1,26 @@
+{
+  "name": "cloudstro-ai",
+  "script": "server.js",
+  "instances": "max",
+  "exec_mode": "cluster",
+  "env": {
+    "NODE_ENV": "production",
+    "PORT": 3000
+  },
+  "env_production": {
+    "NODE_ENV": "production",
+    "PORT": 3000
+  },
+  "log_date_format": "YYYY-MM-DD HH:mm Z",
+  "error_file": "/var/log/pm2/cloudstro-error.log",
+  "out_file": "/var/log/pm2/cloudstro-out.log",
+  "log_file": "/var/log/pm2/cloudstro-combined.log",
+  "time": true,
+  "watch": false,
+  "max_memory_restart": "1G",
+  "instance_var": "INSTANCE_ID",
+  "kill_timeout": 5000,
+  "restart_delay": 5000,
+  "max_restarts": 10,
+  "min_uptime": "10s"
+}

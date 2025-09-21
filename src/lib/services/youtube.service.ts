@@ -26,7 +26,7 @@ export class YouTubeService {
         throw new Error('Channel not found');
       }
 
-      const uploadsPlaylistId = channelResponse.data.items[0].contentDetails.relatedPlaylists.uploads;
+      const uploadsPlaylistId = channelResponse.data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
 
       // Get videos from the uploads playlist
       const videosResponse = await axios.get(`${this.baseUrl}/playlistItems`, {
@@ -39,7 +39,7 @@ export class YouTubeService {
       });
 
       // Get video statistics for engagement data
-      const videoIds = videosResponse.data.items.map((item: any) => item.snippet.resourceId.videoId).join(',');
+      const videoIds = videosResponse.data.items.map((item: any) => item.snippet?.resourceId?.videoId).join(',');
       
       const statsResponse = await axios.get(`${this.baseUrl}/videos`, {
         params: {
@@ -54,12 +54,12 @@ export class YouTubeService {
         const videoSnippet = statsResponse.data.items[index]?.snippet || item.snippet;
         
         return {
-          id: item.snippet.resourceId.videoId,
+          id: item.snippet?.resourceId?.videoId,
           platform: 'youtube' as const,
           content: videoSnippet.title + (videoSnippet.description ? '\n\n' + videoSnippet.description.substring(0, 500) : ''),
-          authorId: item.snippet.channelId,
-          authorName: item.snippet.channelTitle,
-          authorHandle: item.snippet.channelTitle,
+          authorId: item.snippet?.channelId,
+          authorName: item.snippet?.channelTitle,
+          authorHandle: item.snippet?.channelTitle,
           createdAt: new Date(item.snippet.publishedAt),
           engagement: {
             likes: parseInt(stats.likeCount || '0'),
@@ -69,12 +69,12 @@ export class YouTubeService {
           },
           media: [{
             type: 'video' as const,
-            url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-            thumbnailUrl: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.default?.url,
+            url: `https://www.youtube.com/watch?v=${item.snippet?.resourceId?.videoId}`,
+            thumbnailUrl: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.default?.url,
           }],
           hashtags: this.extractHashtags(videoSnippet.description || ''),
           mentions: this.extractMentions(videoSnippet.description || ''),
-          url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
+          url: `https://www.youtube.com/watch?v=${item.snippet?.resourceId?.videoId}`,
         };
       });
     } catch (error) {

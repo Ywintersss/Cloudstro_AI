@@ -1268,7 +1268,7 @@ export default function PlatformDetails({
                     <BarChart3 className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">Predicted Engagement Rate</p>
+                    <p className="text-sm text-gray-600">Predicted Engagement Rate For the Next 7 Days</p>
                     <p className="text-2xl font-bold text-blue-600">
                       {(predictionResult?.prediction * 100).toFixed(2)}%
                     </p>

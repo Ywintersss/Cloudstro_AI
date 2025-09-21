@@ -23,7 +23,7 @@ export class TwitterService {
       }
 
       // Get user tweets
-      const tweets = await this.client.v2.userTimeline(user.data.id, {
+      const tweets = await this.client.v2.userTimeline(user.data?.id, {
         max_results: Math.min(count, 100),
         expansions: ['author_id', 'attachments.media_keys'],
         'tweet.fields': ['created_at', 'public_metrics', 'entities', 'attachments'],
@@ -146,7 +146,7 @@ export class TwitterService {
         media: mediaIds.length > 0 ? { media_ids: mediaIds as any } : undefined,
       });
 
-      return tweet.data.id;
+      return tweet.data?.id;
     } catch (error) {
       console.error('Error posting tweet:', error);
       throw error;

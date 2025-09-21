@@ -68,7 +68,7 @@ export class FacebookService {
       }
 
       const response = await axios.post(`${this.baseUrl}/${pageId}/posts`, postData);
-      return response.data.id;
+      return response.data?.id;
     } catch (error) {
       console.error('Error posting to Facebook:', error);
       throw error;

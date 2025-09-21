@@ -67,7 +67,7 @@ export class SocialMediaManager {
     });
 
     // Sort posts by creation date (newest first)
-    return allPosts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return allPosts.sort((a, b) => b.createdAt?.getTime() - a.createdAt?.getTime());
   }
 
   async getPostsByPlatform(platform: string, accountId: string, count: number = 50): Promise<SocialMediaPost[]> {
@@ -143,7 +143,7 @@ export class SocialMediaManager {
       }
     });
 
-    return allPosts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return allPosts.sort((a, b) => b.createdAt?.getTime() - a.createdAt?.getTime());
   }
 
   async postToMultiplePlatforms(
@@ -201,7 +201,7 @@ export class SocialMediaManager {
 
     for (const [platform, platformPosts] of Object.entries(platformGroups)) {
       const totalEngagement = platformPosts.reduce((sum, post) => {
-        return sum + post.engagement.likes + post.engagement.shares + post.engagement.comments;
+        return sum + post.engagement?.likes + post.engagement?.shares + post.engagement?.comments;
       }, 0);
 
       const totalFollowers = 1000; // This would come from account info

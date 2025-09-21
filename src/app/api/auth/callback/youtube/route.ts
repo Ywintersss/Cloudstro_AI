@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     await repository.createAccount(userId, {
       platform: 'youtube',
       accountId: channel.id,
-      accountName: channel.snippet.title,
+      accountName: channel.snippet?.title,
       accessToken: access_token,
       refreshToken: refresh_token,
       isActive: true,

@@ -114,7 +114,7 @@ export class SocialMediaRepository {
         ...post,
         // Additional fields for indexing
         platform: post.platform,
-        createdAtISO: post.createdAt.toISOString(),
+        createdAtISO: post.createdAt?.toISOString(),
         authorId: post.authorId,
         postType: 'social_media_post',
       },
@@ -158,11 +158,11 @@ export class SocialMediaRepository {
       TableName: this.engagementTable,
       Item: {
         userId: userId,
-        engagementId: `${engagement.postId}#${engagement.timestamp.toISOString()}`,
+        engagementId: `${engagement.postId}#${engagement.timestamp?.toISOString()}`,
         ...engagement,
         // Additional fields for indexing
         postId: engagement.postId,
-        timestampISO: engagement.timestamp.toISOString(),
+        timestampISO: engagement.timestamp?.toISOString(),
         engagementType: 'social_media_engagement',
       },
     }));

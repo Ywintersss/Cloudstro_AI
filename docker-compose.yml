@@ -1,0 +1,52 @@
+# Docker Compose for local development and testing
+version: '3.8'
+
+services:
+  cloudstro-app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DYNAMODB_REGION=${DYNAMODB_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - REGION_1=${REGION_1}
+      - REGION_2=${REGION_2}
+      - REGION_3=${REGION_3}
+      - S3_BUCKET=${S3_BUCKET}
+      - SAGEMAKER_ENDPOINT=${SAGEMAKER_ENDPOINT}
+      - BEDROCK_MODEL_INFERENCE_ARN=${BEDROCK_MODEL_INFERENCE_ARN}
+      - TWITTER_CLIENT_ID=${TWITTER_CLIENT_ID}
+      - TWITTER_CLIENT_SECRET=${TWITTER_CLIENT_SECRET}
+      - FACEBOOK_APP_ID=${FACEBOOK_APP_ID}
+      - FACEBOOK_APP_SECRET=${FACEBOOK_APP_SECRET}
+      - INSTAGRAM_CLIENT_ID=${INSTAGRAM_CLIENT_ID}
+      - INSTAGRAM_CLIENT_SECRET=${INSTAGRAM_CLIENT_SECRET}
+      - REDNOTE_CLIENT_ID=${REDNOTE_CLIENT_ID}
+      - REDNOTE_CLIENT_SECRET=${REDNOTE_CLIENT_SECRET}
+      - TIKTOK_CLIENT_ID=${TIKTOK_CLIENT_ID}
+      - TIKTOK_CLIENT_SECRET=${TIKTOK_CLIENT_SECRET}
+      - DEMO_MODE=${DEMO_MODE}
+    env_file:
+      - .env.production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add nginx for reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - cloudstro-app
+    restart: unless-stopped

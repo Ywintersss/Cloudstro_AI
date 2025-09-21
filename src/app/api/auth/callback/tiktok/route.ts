@@ -35,14 +35,14 @@ export async function GET(request: NextRequest) {
       redirect_uri: `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/callback/tiktok`,
     });
 
-    const { access_token, refresh_token } = tokenResponse.data.data;
+    const { access_token, refresh_token } = tokenResponse.data?.data;
 
     // Get user information
     const userResponse = await axios.post('https://open-api.tiktok.com/platform/oauth/userinfo/', {
       access_token: access_token,
     });
 
-    const userInfo = userResponse.data.data.user;
+    const userInfo = userResponse.data?.data?.user;
 
     // Save the TikTok account
     await repository.createAccount(userId, {

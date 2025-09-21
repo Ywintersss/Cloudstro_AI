@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { BarChart3, X, Minimize2, Sparkles, TrendingUp } from "lucide-react";
 
 type Platform = "x" | "facebook" | "youtube";
@@ -1207,6 +1208,319 @@ export default function PlatformDetails({
           <p className="text-2xl font-bold text-orange-600">
             {currentPlatformData.stats.engagementRate}%
           </p>
+        </div>
+      </div>
+
+      {/* Recommendation Time Card */}
+          <div
+            className="p-4 lg:p-6 flex-1 mb-8"
+            style={{
+              borderRadius: "36px",
+              background: "#ffffff",
+              border: "2px solid #e0e0e0",
+              boxSizing: "border-box",
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-800">
+                ⏰ Recommendation Time
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Best Time</p>
+                <p className="text-lg font-bold text-blue-600">
+                  {(() => {
+                    // Find the most active hour from all analytics
+                    const hours: number[] = [];
+                    currentPlatformData.allContent.forEach(content => {
+                      if (content.analytics?.hourlyEngagement) {
+                        content.analytics.hourlyEngagement.forEach((val, hour) => {
+                          hours[hour] = (hours[hour] || 0) + val;
+                        });
+                      }
+                    });
+                    if (hours.length === 0) return "N/A";
+                    const maxHour = hours.indexOf(Math.max(...hours));
+                    // Format hour as AM/PM
+                    const hourStr = maxHour === 0 ? "12:00 AM" : maxHour < 12 ? `${maxHour}:00 AM` : maxHour === 12 ? "12:00 PM" : `${maxHour-12}:00 PM`;
+                    return hourStr;
+                  })()}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Peak Day</p>
+                <p className="text-lg font-bold text-green-600">
+                  {(() => {
+                    // Find the most common day from all content dates
+                    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+                    const dayCounts: Record<string, number> = {};
+                    currentPlatformData.allContent.forEach(content => {
+                      const d = new Date(content.date);
+                      const day = days[d.getDay()];
+                      dayCounts[day] = (dayCounts[day] || 0) + 1;
+                    });
+                    const peakDay = Object.entries(dayCounts).sort((a,b) => b[1]-a[1])[0];
+                    return peakDay ? peakDay[0] : "N/A";
+                  })()}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Avg Engagement</p>
+                <p className="text-lg font-bold text-purple-600">
+                  {(() => {
+                    // Average engagement rate from analytics
+                    const rates = currentPlatformData.allContent.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
+                    if (rates.length === 0) return "N/A";
+                    const avg = rates.reduce((a,b) => a+b,0)/rates.length;
+                    return `${avg.toFixed(1)}%`;
+                  })()}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-sm text-gray-600">Reach</p>
+                <p className="text-lg font-bold text-orange-600">
+                  {(() => {
+                    // Sum of all views from analytics
+                    const views = currentPlatformData.allContent.map(c => c.analytics?.views).filter(Boolean) as number[];
+                    if (views.length === 0) return "N/A";
+                    const total = views.reduce((a,b) => a+b,0);
+                    return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
+                  })()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+      {/* AI Platform Insights Section */}
+      <div
+        className="p-6 mb-8"
+        style={{
+          borderRadius: "36px",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          border: "2px solid #e0e0e0",
+          boxSizing: "border-box",
+        }}
+      >
+        <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <Image src="/logo.svg" alt="AI Icon" width={20} height={20} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white">
+              AI Platform Insights
+            </h3>
+            <p className="text-white/80 text-sm">
+              AI-powered analysis of your {currentPlatformData.name} performance
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Performance Summary */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Performance Summary
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center text-white/90">
+                <span>Platform Score:</span>
+                <span className="font-bold text-green-300">
+                  {currentPlatformData.stats.engagementRate >= 10
+                    ? "Excellent"
+                    : currentPlatformData.stats.engagementRate >= 7
+                    ? "Good"
+                    : currentPlatformData.stats.engagementRate >= 5
+                    ? "Average"
+                    : "Needs Improvement"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-white/90">
+                <span>Content Quality:</span>
+                <span className="font-bold text-blue-300">
+                  {currentPlatformData.allContent.filter(
+                    (c) =>
+                      c.analytics?.engagementRate &&
+                      c.analytics.engagementRate > 8
+                  ).length > 0
+                    ? "High"
+                    : "Moderate"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-white/90">
+                <span>Audience Engagement:</span>
+                <span className="font-bold text-purple-300">
+                  {currentPlatformData.stats.comments > 300
+                    ? "Very Active"
+                    : currentPlatformData.stats.comments > 150
+                    ? "Active"
+                    : "Moderate"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Key Strengths */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Key Strengths
+            </h4>
+            <div className="space-y-2">
+              {(() => {
+                const strengths = [];
+                if (currentPlatformData.stats.engagementRate > 8) {
+                  strengths.push(
+                    "High engagement rate drives strong community connection"
+                  );
+                }
+                if (currentPlatformData.stats.shares > 150) {
+                  strengths.push(
+                    "Content highly shareable, expanding organic reach"
+                  );
+                }
+                if (currentPlatformData.stats.comments > 200) {
+                  strengths.push("Strong community interaction and discussion");
+                }
+                if (strengths.length === 0) {
+                  strengths.push(
+                    "Consistent content publishing",
+                    "Building audience base",
+                    "Establishing platform presence"
+                  );
+                }
+                return strengths.slice(0, 3).map((strength, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-green-300 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-sm text-white/90">{strength}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+
+          {/* AI Recommendations */}
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+            <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              AI Recommendations
+            </h4>
+            <div className="space-y-2">
+              {(() => {
+                const recommendations = [];
+                if (currentPlatformData.stats.engagementRate < 5) {
+                  recommendations.push(
+                    "Focus on more interactive content formats"
+                  );
+                } else if (currentPlatformData.stats.engagementRate < 8) {
+                  recommendations.push(
+                    "Experiment with posting times and content types"
+                  );
+                }
+                if (currentPlatformData.stats.shares < 100) {
+                  recommendations.push(
+                    "Add clear call-to-actions to boost sharing"
+                  );
+                }
+                if (currentPlatformData.stats.comments < 150) {
+                  recommendations.push(
+                    "Ask more questions to spark discussions"
+                  );
+                }
+
+                // Platform-specific recommendations
+                if (platform === "x") {
+                  recommendations.push(
+                    "Utilize trending hashtags for broader reach"
+                  );
+                } else if (platform === "facebook") {
+                  recommendations.push(
+                    "Share behind-the-scenes content for authenticity"
+                  );
+                } else if (platform === "youtube") {
+                  recommendations.push(
+                    "Optimize thumbnails for higher click-through rates"
+                  );
+                }
+
+                return recommendations.slice(0, 3).map((rec, index) => (
+                  <div key={index} className="flex items-start gap-2">
+                    <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-sm text-white/90">{rec}</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+        </div>
+
+        {/* Overall Platform Analysis - Dropdown */}
+        <div className="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">
+          <button
+            onClick={() => setIsAnalyticsOpen(!isAnalyticsOpen)}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+          >
+            <h4 className="font-semibold text-white flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Platform Analysis Summary
+            </h4>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/70 bg-white/20 px-2 py-1 rounded-full">
+                AI Generated
+              </span>
+              <div
+                className={`transform transition-transform duration-200 ${
+                  isAnalyticsOpen ? "rotate-180" : ""
+                }`}
+              >
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </button>
+
+          {isAnalyticsOpen && (
+            <div className="p-4 border-t border-white/10">
+              <p className="text-white/90 text-sm leading-relaxed">
+                {(() => {
+                  const totalLikes = currentPlatformData.stats.totalLikes;
+                  const engagementRate =
+                    currentPlatformData.stats.engagementRate;
+                  const contentCount = currentPlatformData.allContent.length;
+
+                  if (engagementRate >= 10) {
+                    return `Your ${
+                      currentPlatformData.name
+                    } presence is performing exceptionally well with ${totalLikes.toLocaleString()} total likes and ${engagementRate}% engagement rate. Your ${contentCount} pieces of content demonstrate strong audience connection and viral potential. This platform should be a key focus area for content expansion.`;
+                  } else if (engagementRate >= 7) {
+                    return `${
+                      currentPlatformData.name
+                    } shows solid performance with ${totalLikes.toLocaleString()} total likes across ${contentCount} posts. Your ${engagementRate}% engagement rate indicates good audience resonance. With strategic optimization, this platform has strong growth potential.`;
+                  } else if (engagementRate >= 5) {
+                    return `Your ${
+                      currentPlatformData.name
+                    } account shows moderate performance with ${totalLikes.toLocaleString()} total likes. The ${engagementRate}% engagement rate suggests room for improvement through content optimization and audience targeting strategies.`;
+                  } else {
+                    return `${
+                      currentPlatformData.name
+                    } presents an opportunity for growth. While you have ${contentCount} posts and ${totalLikes.toLocaleString()} total likes, the ${engagementRate}% engagement rate indicates potential for significant improvement through strategic content refinement.`;
+                  }
+                })()}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

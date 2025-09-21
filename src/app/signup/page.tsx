@@ -3,14 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [errors, setErrors] = useState({
     fullName: "",
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
+    submit: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
@@ -59,9 +62,10 @@ export default function SignupPage() {
       email: "",
       password: "",
       confirmPassword: "",
+      submit: "",
     };
 
-    // Check for empty fields
+    // Validation
     if (!fullName || fullName.trim() === "") {
       newErrors.fullName = "Please do not leave any fields empty";
     }
@@ -90,14 +94,13 @@ export default function SignupPage() {
       newErrors.confirmPassword = "Please do not leave any fields empty";
     }
 
-    // Check if passwords match (only if both are filled)
     if (password && confirmPassword && password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
 
-    // If no errors, proceed with signup logic
+    // If validation passes, make API call
     if (
       !newErrors.fullName &&
       !newErrors.username &&
@@ -154,9 +157,7 @@ export default function SignupPage() {
 
   return (
     <div className="cursor-default min-h-screen bg-white">
-      {/* Main Content */}
       <main className="flex flex-col min-h-screen">
-        {/* Signup Section - Full Page */}
         <div className="px-4 flex flex-col justify-center items-center min-h-screen py-8">
           <div className="w-full max-w-sm">
             <div className="text-center mb-3">
@@ -168,7 +169,6 @@ export default function SignupPage() {
               </p>
             </div>
 
-            {/* Signup Form */}
             <div
               className="p-6"
               style={{
@@ -191,6 +191,13 @@ export default function SignupPage() {
               )}
 
               <form className="space-y-4" onSubmit={handleSubmit}>
+                {/* General submit error */}
+                {errors.submit && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-600 text-sm">{errors.submit}</p>
+                  </div>
+                )}
+
                 <div>
                   <label
                     htmlFor="fullName"
@@ -202,7 +209,8 @@ export default function SignupPage() {
                     type="text"
                     id="fullName"
                     name="fullName"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.fullName
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"
@@ -254,7 +262,8 @@ export default function SignupPage() {
                     type="text"
                     id="email"
                     name="email"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.email
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"
@@ -278,12 +287,13 @@ export default function SignupPage() {
                     type="password"
                     id="password"
                     name="password"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.password
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"
                     }`}
-                    placeholder="Create a strong password"
+                    placeholder="Create a strong password (min 8 characters)"
                     onChange={() => clearError("password")}
                   />
                   {errors.password && (
@@ -304,7 +314,8 @@ export default function SignupPage() {
                     type="password"
                     id="confirmPassword"
                     name="confirmPassword"
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                    disabled={isSubmitting}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       errors.confirmPassword
                         ? "border-red-500 bg-red-50"
                         : "border-gray-300"

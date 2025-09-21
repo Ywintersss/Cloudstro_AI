@@ -258,48 +258,6 @@ export default function DashboardContent() {
         
         {/* Third Row */}
         <div className="flex flex-col md:flex-row gap-4 lg:gap-6">
-          {/* Recommendation Time Card */}
-          <div
-            className="p-4 lg:p-6 flex-1 md:w-[450px] lg:w-[450px]"
-            style={{
-              borderRadius: "36px",
-              background: "#ffffff",
-              border: "2px solid #e0e0e0",
-              boxSizing: "border-box",
-            }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-gray-800">
-                ⏰ Recommendation Time
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Best Time</p>
-                <p className="text-lg font-bold text-blue-600">
-                  {analytics?.bestPostingTime || '2:00 PM'}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Peak Day</p>
-                <p className="text-lg font-bold text-green-600">
-                  {analytics?.bestPostingDay || 'Tuesday'}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Avg Engagement</p>
-                <p className="text-lg font-bold text-purple-600">
-                  {analytics?.averageEngagement || 0}
-                </p>
-              </div>
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Reach</p>
-                <p className="text-lg font-bold text-orange-600">
-                  {analytics?.totalReach ? `${(analytics.totalReach / 1000).toFixed(1)}K` : '0K'}
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* Region for Best Traffic Card */}
           <div

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { BarChart3, X, Minimize2, Sparkles, TrendingUp } from "lucide-react";
 

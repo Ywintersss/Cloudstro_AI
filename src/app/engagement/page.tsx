@@ -175,7 +175,7 @@ export default function EngagementContent({
 
   // Get recent activity across all platforms
   const allComments = Object.values(platformData).flatMap(
-    (platform) => platform.comments
+    (platform) => platform?.comments
   );
   const recentComments = allComments
     .sort((a, b) => {

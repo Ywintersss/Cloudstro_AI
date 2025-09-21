@@ -27,7 +27,7 @@ const bedrockClient = new BedrockRuntimeClient({
 // ---- HANDLER ----
 export async function POST(req: Request) {
   console.log("Received request at /api/predict");
-  console.log("Body:", req);
+  console.log("Body:", req.body);
   try {
     // const { input } = await req.json();
     // if (!input) {

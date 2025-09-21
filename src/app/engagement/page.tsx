@@ -4,7 +4,15 @@ import PlatformDetails from "../platformDetails/page"; // Import the new compone
 
 type Platform = "x" | "facebook" | "youtube" | null;
 
-export default function EngagementContent() {
+interface EngagementContentProps {
+  onNavigate: (page: string) => void;
+  onSetAnalysisContent: (content: any) => void;
+}
+
+export default function EngagementContent({
+  onNavigate,
+  onSetAnalysisContent,
+}: EngagementContentProps) {
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>(null);
 
   // Mock data for different platforms (for summary only)
@@ -118,7 +126,8 @@ export default function EngagementContent() {
         {
           id: 2,
           user: "learning_student",
-          comment: "Could you make a follow-up video about advanced techniques?",
+          comment:
+            "Could you make a follow-up video about advanced techniques?",
           platform: "YouTube",
           time: "2 hours ago",
           type: "question",
@@ -195,9 +204,13 @@ export default function EngagementContent() {
   // If a platform is selected, render the PlatformDetails component
   if (selectedPlatform) {
     return (
-      <PlatformDetails 
-        platform={selectedPlatform} 
-        onBack={handleBackToOverview} 
+      <PlatformDetails
+        platform={selectedPlatform}
+        onBack={handleBackToOverview}
+        onNavigateToAnalysis={(content) => {
+          onSetAnalysisContent(content);
+          onNavigate("analysis");
+        }}
       />
     );
   }
@@ -210,7 +223,7 @@ export default function EngagementContent() {
           Engagement Analytics
         </h1>
       </div>
-      
+
       {/* Overall Summary Section */}
       <div className="mb-4">
         <div

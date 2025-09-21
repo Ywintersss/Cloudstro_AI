@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BarChart3, X, Minimize2, Sparkles, TrendingUp } from "lucide-react";
 
 type Platform = "x" | "facebook" | "youtube";
 
@@ -64,11 +65,178 @@ interface PlatformData {
 interface PlatformDetailsProps {
   platform: Platform;
   onBack: () => void;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
 }
+
+// AI Analysis Widget Component for Analytics Modal
+const AIAnalysisWidget = ({
+  analyticsContent,
+  platform,
+  onNavigateToAnalysis,
+}: {
+  analyticsContent: ContentItem;
+  platform: Platform;
+  onNavigateToAnalysis?: (content: ContentItem) => void;
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+
+  const handleAnalysisRedirect = () => {
+    console.log(
+      `Redirecting to analysis with ${platform} content data:`,
+      analyticsContent
+    );
+
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(analyticsContent);
+    } else {
+      alert(
+        `Would redirect to /analysis with detailed AI insights for: "${analyticsContent.title}"`
+      );
+    }
+  };
+
+  const getInsightPreview = () => {
+    if (!analyticsContent.analytics)
+      return "No analytics data available for AI analysis.";
+
+    const { engagementRate, views, likes } = analyticsContent.analytics;
+    if (engagementRate > 10) {
+      return `High-performing content! ${engagementRate}% engagement rate suggests strong audience connection. Let me analyze what made this successful.`;
+    } else if (engagementRate > 5) {
+      return `Solid performance with ${engagementRate}% engagement. I can identify optimization opportunities from your ${views.toLocaleString()} views.`;
+    } else {
+      return `This content has growth potential. With ${views.toLocaleString()} views but ${engagementRate}% engagement, let's find improvement strategies.`;
+    }
+  };
+
+  return (
+    <>
+      <div className="fixed bottom-4 right-4 z-50">
+        {!isOpen && (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="cursor-pointer w-14 h-14 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group animate-pulse hover:animate-none"
+          >
+            <div className="relative">
+              <BarChart3 className="w-6 h-6 group-hover:scale-110 transition-transform" />
+              <Sparkles className="w-3 h-3 absolute -top-1 -right-1 text-yellow-300" />
+            </div>
+          </button>
+        )}
+
+        {isOpen && (
+          <div
+            className={`bg-white rounded-xl shadow-2xl transition-all duration-300 ${
+              isMinimized ? "w-80 h-12" : "w-80 h-auto max-h-[400px]"
+            } border border-gray-200`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-t-xl flex items-center justify-between">
+              <h3 className="font-semibold flex items-center text-sm">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                AI Content Analysis
+              </h3>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setIsMinimized(!isMinimized)}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <Minimize2 className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsMinimized(false);
+                  }}
+                  className="hover:bg-white/20 p-1 rounded transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+
+            {!isMinimized && (
+              <div className="p-4 space-y-3">
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-xs text-gray-800 mb-2 flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3 text-purple-600" />
+                    Content: {analyticsContent.title}
+                  </h4>
+                  {analyticsContent.analytics && (
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div className="text-center">
+                        <p className="font-bold text-purple-600">
+                          {analyticsContent.analytics.views.toLocaleString()}
+                        </p>
+                        <p className="text-gray-600">Views</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-blue-600">
+                          {analyticsContent.analytics.engagementRate}%
+                        </p>
+                        <p className="text-gray-600">Engagement</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="font-bold text-green-600">
+                          {analyticsContent.analytics.likes}
+                        </p>
+                        <p className="text-gray-600">Likes</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-700 flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-purple-500" />
+                    AI Insight:
+                  </label>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-2">
+                    <p className="text-xs text-gray-800 leading-relaxed">
+                      {getInsightPreview()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <button
+                    onClick={handleAnalysisRedirect}
+                    className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-2 px-3 rounded-lg transition-all duration-200 font-medium text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+                  >
+                    <BarChart3 className="w-3 h-3" />
+                    Deep AI Analysis
+                  </button>
+
+                  <div className="text-xs text-gray-500 text-center">
+                    Get comprehensive insights for this content
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                  <h4 className="text-xs font-semibold text-blue-800 mb-1">
+                    Analysis includes:
+                  </h4>
+                  <ul className="text-xs text-blue-700 space-y-0.5">
+                    <li>• Performance vs similar content</li>
+                    <li>• Audience engagement patterns</li>
+                    <li>• Optimization recommendations</li>
+                    <li>• Content strategy insights</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
 
 export default function PlatformDetails({
   platform,
   onBack,
+  onNavigateToAnalysis,
 }: PlatformDetailsProps) {
   const [selectedComments, setSelectedComments] = useState<number[]>([]);
   const [replyText, setReplyText] = useState<string>("");
@@ -561,6 +729,12 @@ export default function PlatformDetails({
     setSelectedComments([]);
   };
 
+  const handleNavigateToAnalysis = (content: ContentItem) => {
+    if (onNavigateToAnalysis) {
+      onNavigateToAnalysis(content);
+    }
+  };
+
   // Analytics Modal Component
   const AnalyticsModal = () => {
     if (!isAnalyticsOpen || !analyticsContent) return null;
@@ -596,26 +770,46 @@ export default function PlatformDetails({
           {/* Modal Header */}
           <div className="sticky top-0 bg-white rounded-t-3xl border-b border-gray-200 p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
-                  <span className="text-3xl">{currentPlatformData.icon}</span>
-                  Analytics
-                </h2>
-                <div className="flex items-center gap-3 mt-2">
-                  <span className="text-sm font-medium text-gray-700">
-                    {analyticsContent.title}
-                  </span>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                    {analyticsContent.type}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {analyticsContent.date}
-                  </span>
+              <div className="flex items-center gap-4">
+                <div>
+                  <div className="flex flex-row gap-5">
+                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                      <span className="text-3xl">
+                        {currentPlatformData.icon}
+                      </span>
+                      Analytics
+                    </h2>
+                    {/* AI Widget Button in Header */}
+                    <button
+                      onClick={() => {
+                        if (analyticsContent) {
+                          handleNavigateToAnalysis(analyticsContent);
+                        }
+                      }}
+                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm flex items-center gap-2 shadow-md hover:shadow-lg"
+                    >
+                      <BarChart3 className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4" />
+                      AI Analysis
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      {analyticsContent.title}
+                    </span>
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {analyticsContent.type}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {analyticsContent.date}
+                    </span>
+                  </div>
                 </div>
               </div>
+
               <button
                 onClick={closeAnalytics}
-                className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+                className="text-gray-400 hover:text-gray-600 text-2xl font-bold ml-4"
               >
                 ×
               </button>
@@ -623,277 +817,318 @@ export default function PlatformDetails({
           </div>
 
           {/* Analytics Content - Unified Layout */}
-<div className="p-6">
-  <div className="space-y-6">
-    
-    {/* Key Metrics - Full Width */}
-    <div className="p-6 bg-gray-50 rounded-2xl">
-      <h3 className="text-lg font-bold text-gray-800 mb-4">
-        Key Metrics
-      </h3>
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Views</p>
-          <p className="text-xl font-bold text-blue-500">
-            {analyticsContent.analytics.views.toLocaleString()}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Likes</p>
-          <p className="text-xl font-bold text-red-500">
-            {analyticsContent.analytics.likes.toLocaleString()}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Comments</p>
-          <p className="text-xl font-bold text-green-500">
-            {analyticsContent.analytics.comments}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Shares</p>
-          <p className="text-xl font-bold text-purple-500">
-            {analyticsContent.analytics.shares}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Impressions</p>
-          <p className="text-xl font-bold text-orange-500">
-            {analyticsContent.analytics.impressions.toLocaleString()}
-          </p>
-        </div>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">Engagement Rate</p>
-          <p className="text-xl font-bold text-indigo-500">
-            {analyticsContent.analytics.engagementRate}%
-          </p>
-        </div>
-      </div>
-    </div>
-
-    {/* Analytics Data Row with Comments */}
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Left Side - Comments Management */}
-      <div className="lg:col-span-1">
-        <div className="p-4 bg-gray-50 rounded-2xl">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-800">💬 Comments</h3>
-          </div>
-
-          {/* Filter Controls */}
-          <div className="mb-4">
-            <div className="flex items-center space-x-2 mb-2">
-              <label className="text-sm font-medium text-gray-700">Filter:</label>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
-              >
-                <option value="all">All</option>
-                <option value="positive">Positive</option>
-                <option value="negative">Negative</option>
-                <option value="question">Questions</option>
-              </select>
-            </div>
-            <div className="text-sm text-gray-600 mb-2">
-              {selectedComments.length} selected
-            </div>
-
-            {selectedComments.length > 0 && (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Reply..."
-                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={handleBulkReply}
-                  className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                >
-                  Reply
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Comments List */}
-          <div className="space-y-2 max-h-48 overflow-y-auto">
-            {filteredComments.map((comment) => (
-              <div
-                key={comment.id}
-                className={`p-2 rounded border text-xs transition-colors ${
-                  selectedComments.includes(comment.id)
-                    ? "bg-blue-50 border-blue-300"
-                    : "bg-white border-gray-200"
-                }`}
-              >
-                <div className="flex items-start space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedComments.includes(comment.id)}
-                    onChange={() => handleCommentSelect(comment.id)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-medium text-gray-800">
-                        @{comment.user}
-                      </span>
-                      <span className="text-xs text-gray-500">{comment.time}</span>
-                    </div>
-                    <p className="text-gray-700 mb-1">{comment.comment}</p>
-                    <span
-                      className={`px-2 py-1 text-xs rounded ${
-                        comment.type === "positive"
-                          ? "bg-green-100 text-green-800"
-                          : comment.type === "negative"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {comment.type}
-                    </span>
+          <div className="p-6">
+            <div className="space-y-6">
+              {/* Key Metrics - Full Width */}
+              <div className="p-6 bg-gray-50 rounded-2xl">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">
+                  Key Metrics
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Views</p>
+                    <p className="text-xl font-bold text-blue-500">
+                      {analyticsContent.analytics.views.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Likes</p>
+                    <p className="text-xl font-bold text-red-500">
+                      {analyticsContent.analytics.likes.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Comments</p>
+                    <p className="text-xl font-bold text-green-500">
+                      {analyticsContent.analytics.comments}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Shares</p>
+                    <p className="text-xl font-bold text-purple-500">
+                      {analyticsContent.analytics.shares}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Impressions</p>
+                    <p className="text-xl font-bold text-orange-500">
+                      {analyticsContent.analytics.impressions.toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600">Engagement Rate</p>
+                    <p className="text-xl font-bold text-indigo-500">
+                      {analyticsContent.analytics.engagementRate}%
+                    </p>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* Right Side - Analytics Data */}
-      <div className="lg:col-span-3">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Top Countries */}
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Top Countries
-            </h3>
-            <div className="space-y-3">
-              {analyticsContent.analytics.topCountries.map((country, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">{country}</span>
-                  <div className="flex items-center">
-                    <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                      <div
-                        className="h-2 bg-blue-500 rounded-full"
-                        style={{ width: `${(3 - index) * 33}%` }}
-                      ></div>
+              {/* Analytics Data Row with Comments */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Left Side - Comments Management */}
+                <div className="lg:col-span-1">
+                  <div className="p-4 bg-gray-50 rounded-2xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-bold text-gray-800">
+                        💬 Comments
+                      </h3>
                     </div>
-                    <span className="text-xs text-gray-500 w-8">
-                      {(3 - index) * 33}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Age Demographics */}
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Age Demographics
-            </h3>
-            <div className="space-y-3">
-              {Object.entries(analyticsContent.analytics.ageGroups).map(
-                ([age, percentage]) => (
-                  <div key={age} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{age}</span>
-                    <div className="flex items-center">
-                      <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
-                        <div
-                          className="h-2 bg-green-500 rounded-full"
-                          style={{ width: `${percentage}%` }}
-                        ></div>
+                    {/* Filter Controls */}
+                    <div className="mb-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <label className="text-sm font-medium text-gray-700">
+                          Filter:
+                        </label>
+                        <select
+                          value={filterType}
+                          onChange={(e) => setFilterType(e.target.value)}
+                          className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
+                        >
+                          <option value="all">All</option>
+                          <option value="positive">Positive</option>
+                          <option value="negative">Negative</option>
+                          <option value="question">Questions</option>
+                        </select>
                       </div>
-                      <span className="text-xs text-gray-500 w-8">
-                        {percentage}%
-                      </span>
+                      <div className="text-sm text-gray-600 mb-2">
+                        {selectedComments.length} selected
+                      </div>
+
+                      {selectedComments.length > 0 && (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Reply..."
+                            className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-blue-500"
+                          />
+                          <button
+                            onClick={handleBulkReply}
+                            className="px-2 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                          >
+                            Reply
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Comments List */}
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {filteredComments.map((comment) => (
+                        <div
+                          key={comment.id}
+                          className={`p-2 rounded border text-xs transition-colors ${
+                            selectedComments.includes(comment.id)
+                              ? "bg-blue-50 border-blue-300"
+                              : "bg-white border-gray-200"
+                          }`}
+                        >
+                          <div className="flex items-start space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={selectedComments.includes(comment.id)}
+                              onChange={() => handleCommentSelect(comment.id)}
+                              className="mt-1"
+                            />
+                            <div className="flex-1">
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="font-medium text-gray-800">
+                                  @{comment.user}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {comment.time}
+                                </span>
+                              </div>
+                              <p className="text-gray-700 mb-1">
+                                {comment.comment}
+                              </p>
+                              <span
+                                className={`px-2 py-1 text-xs rounded ${
+                                  comment.type === "positive"
+                                    ? "bg-green-100 text-green-800"
+                                    : comment.type === "negative"
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-yellow-100 text-yellow-800"
+                                }`}
+                              >
+                                {comment.type}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Hourly Engagement */}
-          <div className="p-6 bg-gray-50 rounded-2xl">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              Hourly Engagement
-            </h3>
-            <div className="grid grid-cols-12 gap-1 mb-3">
-              {analyticsContent.analytics.hourlyEngagement.map((value, hour) => (
-                <div key={hour} className="text-center">
-                  <div
-                    className="w-full bg-blue-500 rounded-t mb-1"
-                    style={{
-                      height: `${Math.max(value * 1.5, 2)}px`,
-                    }}
-                  ></div>
-                  <span className="text-xs text-gray-500">{hour}</span>
                 </div>
-              ))}
-            </div>
-            <p className="text-xs text-gray-500">
-              Peak engagement varies by content
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
 
+                {/* Right Side - Analytics Data */}
+                <div className="lg:col-span-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Top Countries */}
+                    <div className="p-6 bg-gray-50 rounded-2xl">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
+                        Top Countries
+                      </h3>
+                      <div className="space-y-3">
+                        {analyticsContent.analytics.topCountries.map(
+                          (country, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-sm text-gray-700">
+                                {country}
+                              </span>
+                              <div className="flex items-center">
+                                <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                                  <div
+                                    className="h-2 bg-blue-500 rounded-full"
+                                    style={{ width: `${(3 - index) * 33}%` }}
+                                  ></div>
+                                </div>
+                                <span className="text-xs text-gray-500 w-8">
+                                  {(3 - index) * 33}%
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
 
-    {/* Bottom Row - Top Posts and Success Factors */}
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Top Posts */}
-      <div className="p-4 bg-gray-50 rounded-2xl">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">🏆 Top Posts</h3>
-        <div className="space-y-2">
-          {currentPlatformData.topPosts.slice(0, 3).map((post, index) => (
-            <div
-              key={index}
-              className="p-2 bg-white rounded border border-gray-200"
-            >
-              <p className="text-sm font-medium text-gray-800 mb-1">
-                {post.title}
-              </p>
-              <div className="flex justify-between text-xs text-gray-500">
-                <span>{post.time}</span>
-                <span className="text-blue-600">{post.engagement}</span>
+                    {/* Age Demographics */}
+                    <div className="p-6 bg-gray-50 rounded-2xl">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
+                        Age Demographics
+                      </h3>
+                      <div className="space-y-3">
+                        {Object.entries(
+                          analyticsContent.analytics.ageGroups
+                        ).map(([age, percentage]) => (
+                          <div
+                            key={age}
+                            className="flex items-center justify-between"
+                          >
+                            <span className="text-sm text-gray-700">{age}</span>
+                            <div className="flex items-center">
+                              <div className="w-16 h-2 bg-gray-200 rounded-full mr-2">
+                                <div
+                                  className="h-2 bg-green-500 rounded-full"
+                                  style={{ width: `${percentage}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs text-gray-500 w-8">
+                                {percentage}%
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Hourly Engagement */}
+                    <div className="p-6 bg-gray-50 rounded-2xl">
+                      <h3 className="text-lg font-bold text-gray-800 mb-4">
+                        Hourly Engagement
+                      </h3>
+                      <div className="grid grid-cols-12 gap-1 mb-3">
+                        {analyticsContent.analytics.hourlyEngagement.map(
+                          (value, hour) => (
+                            <div key={hour} className="text-center">
+                              <div
+                                className="w-full bg-blue-500 rounded-t mb-1"
+                                style={{
+                                  height: `${Math.max(value * 1.5, 2)}px`,
+                                }}
+                              ></div>
+                              <span className="text-xs text-gray-500">
+                                {hour}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        Peak engagement varies by content
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Row - Top Posts and Success Factors */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Top Posts */}
+                <div className="p-4 bg-gray-50 rounded-2xl">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    🏆 Top Posts
+                  </h3>
+                  <div className="space-y-2">
+                    {currentPlatformData.topPosts
+                      .slice(0, 3)
+                      .map((post, index) => (
+                        <div
+                          key={index}
+                          className="p-2 bg-white rounded border border-gray-200"
+                        >
+                          <p className="text-sm font-medium text-gray-800 mb-1">
+                            {post.title}
+                          </p>
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>{post.time}</span>
+                            <span className="text-blue-600">
+                              {post.engagement}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                {/* Success Factors */}
+                <div className="p-4 bg-gray-50 rounded-2xl">
+                  <h3 className="text-lg font-bold text-gray-800 mb-4">
+                    📈 Success
+                  </h3>
+                  <div className="space-y-2">
+                    {currentPlatformData.successFactors
+                      .slice(0, 3)
+                      .map((factor, index) => (
+                        <div
+                          key={index}
+                          className="p-2 bg-white rounded border border-gray-200"
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-800 mb-1">
+                                {factor.factor}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {factor.description}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
 
-      {/* Success Factors */}
-      <div className="p-4 bg-gray-50 rounded-2xl">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">📈 Success</h3>
-        <div className="space-y-2">
-          {currentPlatformData.successFactors.slice(0, 3).map((factor, index) => (
-            <div
-              key={index}
-              className="p-2 bg-white rounded border border-gray-200"
-            >
-              <div className="flex items-start gap-2">
-                <div className="w-1 h-1 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                <div>
-                  <p className="text-sm font-medium text-gray-800 mb-1">
-                    {factor.factor}
-                  </p>
-                  <p className="text-xs text-gray-600">{factor.description}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-        </div>
+        {/* AI Analysis Widget - Only shows when analytics modal is open */}
+        {analyticsContent && (
+          <AIAnalysisWidget
+            analyticsContent={analyticsContent}
+            platform={platform}
+            onNavigateToAnalysis={onNavigateToAnalysis}
+          />
+        )}
       </div>
     );
   };

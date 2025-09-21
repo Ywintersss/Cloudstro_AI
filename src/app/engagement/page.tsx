@@ -154,23 +154,23 @@ export default function EngagementContent({
 
   const totalStats = {
     totalLikes: Object.values(platformData).reduce(
-      (sum, platform) => sum + platform.stats.totalLikes,
+      (sum, platform) => sum + platform?.stats?.totalLikes,
       0
     ),
     totalComments: Object.values(platformData).reduce(
-      (sum, platform) => sum + platform.stats.comments,
+      (sum, platform) => sum + platform?.stats?.comments,
       0
     ),
     totalShares: Object.values(platformData).reduce(
-      (sum, platform) => sum + platform.stats.shares,
+      (sum, platform) => sum + platform?.stats?.shares,
       0
     ),
     avgEngagementRate:
       Object.values(platformData).reduce(
-        (sum, platform) => sum + platform.stats.engagementRate,
+        (sum, platform) => sum + platform?.stats?.engagementRate,
         0
       ) / Object.values(platformData).length,
-    totalPlatforms: Object.keys(platformData).length,
+    totalPlatforms: Object.keys(platformData)?.length,
   };
 
   // Get recent activity across all platforms
@@ -245,30 +245,30 @@ export default function EngagementContent({
             <div className="bg-gray-50 rounded-md p-2 text-center border border-gray-200">
               <p className="text-xs mb-1 text-gray-600">Total Likes</p>
               <p className="text-base lg:text-lg font-bold text-red-500">
-                {totalStats.totalLikes.toLocaleString()}
+                {totalStats?.totalLikes?.toLocaleString()}
               </p>
               <p className="text-xs text-green-600">
-                Across {totalStats.totalPlatforms} platforms
+                Across {totalStats?.totalPlatforms} platforms
               </p>
             </div>
             <div className="bg-gray-50 rounded-md p-2 text-center border border-gray-200">
               <p className="text-xs mb-1 text-gray-600">Total Comments</p>
               <p className="text-base lg:text-lg font-bold text-blue-500">
-                {totalStats.totalComments}
+                {totalStats?.totalComments}
               </p>
               <p className="text-xs text-green-600">Active conversations</p>
             </div>
             <div className="bg-gray-50 rounded-md p-2 text-center border border-gray-200">
               <p className="text-xs mb-1 text-gray-600">Total Shares</p>
               <p className="text-base lg:text-lg font-bold text-green-500">
-                {totalStats.totalShares}
+                {totalStats?.totalShares}
               </p>
               <p className="text-xs text-green-600">Content distributed</p>
             </div>
             <div className="bg-gray-50 rounded-md p-2 text-center border border-gray-200">
               <p className="text-xs mb-1 text-gray-600">Avg Engagement</p>
               <p className="text-base lg:text-lg font-bold text-purple-500">
-                {totalStats.avgEngagementRate.toFixed(1)}%
+                {totalStats?.avgEngagementRate?.toFixed(1)}%
               </p>
               <p className="text-xs text-green-600">Cross-platform rate</p>
             </div>
@@ -288,17 +288,17 @@ export default function EngagementContent({
                     className="flex items-center justify-between bg-gray-50 rounded-md p-2 border border-gray-200"
                   >
                     <div className="flex items-center gap-1">
-                      <span className="text-xs">{platform.icon}</span>
+                      <span className="text-xs">{platform?.icon}</span>
                       <span className="font-medium text-xs text-gray-800">
-                        {platform.name}
+                        {platform?.name}
                       </span>
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-xs text-gray-800">
-                        {platform.stats.engagementRate}%
+                        {platform?.stats?.engagementRate}%
                       </p>
                       <p className="text-xs text-gray-600">
-                        {platform.stats.comments} comments
+                        {platform?.stats?.comments} comments
                       </p>
                     </div>
                   </div>
@@ -319,17 +319,17 @@ export default function EngagementContent({
                   >
                     <div className="flex justify-between items-start mb-1">
                       <span className="font-medium text-xs text-gray-800">
-                        @{comment.user}
+                        @{comment?.user}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {comment.time}
+                        {comment?.time}
                       </span>
                     </div>
                     <p className="text-xs truncate text-gray-700">
-                      {comment.comment}
+                      {comment?.comment}
                     </p>
                     <span className="text-xs text-gray-500">
-                      {comment.platform}
+                      {comment?.platform}
                     </span>
                   </div>
                 ))}
@@ -362,12 +362,12 @@ export default function EngagementContent({
           },
         ].map((item) => (
           <button
-            key={item.platform}
-            onClick={() => handlePlatformSelect(item.platform)}
+            key={item?.platform}
+            onClick={() => handlePlatformSelect(item?.platform)}
             className={`flex items-center gap-3 px-6 py-3 text-white rounded-lg font-medium transition-all transform hover:scale-105 ${item.color}`}
           >
-            <span className="text-xl">{item.icon}</span>
-            <span>{item.name}</span>
+            <span className="text-xl">{item?.icon}</span>
+            <span>{item?.name}</span>
           </button>
         ))}
       </div>

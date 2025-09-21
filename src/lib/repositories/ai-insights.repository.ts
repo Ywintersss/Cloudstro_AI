@@ -63,11 +63,13 @@ export class AIInsightsRepository {
     await this.docClient.send(new PutCommand({
       TableName: this.insightsTable,
       Item: {
-        PK: `USER#${userId}`,
-        SK: `INSIGHT#${insight.type}#${now.toISOString().split('T')[0]}#${insightId}`,
-        ...record,
-        GSI1PK: `INSIGHT_TYPE#${insight.type}`,
-        GSI1SK: `${insight.confidence}#${now.toISOString()}`,
+        ...record, // This includes userId and insightId
+        // Additional fields for indexing
+        insightType: insight.type,
+        confidenceScore: insight.confidence,
+        generatedAtISO: now.toISOString(),
+        validUntilISO: validUntil.toISOString(),
+        recordType: 'ai_insight',
         TTL: Math.floor(validUntil.getTime() / 1000), // DynamoDB TTL
       },
     }));
@@ -78,10 +80,9 @@ export class AIInsightsRepository {
   async getUserInsights(userId: string, limit: number = 20): Promise<AIInsightRecord[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.insightsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'INSIGHT#',
+        ':userId': userId,
       },
       ScanIndexForward: false, // Most recent first
       Limit: limit,
@@ -93,10 +94,11 @@ export class AIInsightsRepository {
   async getUserInsightsByType(userId: string, type: string, limit: number = 10): Promise<AIInsightRecord[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.insightsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'insightType = :type',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': `INSIGHT#${type}#`,
+        ':userId': userId,
+        ':type': type,
       },
       ScanIndexForward: false,
       Limit: limit,
@@ -109,11 +111,10 @@ export class AIInsightsRepository {
     const now = new Date();
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.insightsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
-      FilterExpression: 'validUntil > :now AND isActive = :active',
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'validUntilISO > :now AND isActive = :active',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'INSIGHT#',
+        ':userId': userId,
         ':now': now.toISOString(),
         ':active': true,
       },
@@ -126,11 +127,10 @@ export class AIInsightsRepository {
   async getInsightsByPlatform(userId: string, platform: string, limit: number = 10): Promise<AIInsightRecord[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.insightsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
       FilterExpression: 'platform = :platform',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'INSIGHT#',
+        ':userId': userId,
         ':platform': platform,
       },
       ScanIndexForward: false,
@@ -141,21 +141,11 @@ export class AIInsightsRepository {
   }
 
   async markInsightAsUsed(userId: string, insightId: string): Promise<void> {
-    // Find the insight first to get the full SK
-    const insights = await this.getUserInsights(userId, 100);
-    const insight = insights.find(i => i.insightId === insightId);
-    
-    if (!insight) {
-      throw new Error('Insight not found');
-    }
-
-    const sk = `INSIGHT#${insight.type}#${insight.generatedAt.toISOString().split('T')[0]}#${insightId}`;
-
     await this.docClient.send(new UpdateCommand({
       TableName: this.insightsTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: sk,
+        userId: userId,
+        insightId: insightId,
       },
       UpdateExpression: 'SET #used = :used, updatedAt = :now',
       ExpressionAttributeNames: {
@@ -179,11 +169,10 @@ export class AIInsightsRepository {
 
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.insightsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
-      FilterExpression: 'generatedAt > :cutoff',
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'generatedAtISO > :cutoff',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'INSIGHT#',
+        ':userId': userId,
         ':cutoff': cutoffDate.toISOString(),
       },
     }));

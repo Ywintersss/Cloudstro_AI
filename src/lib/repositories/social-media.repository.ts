@@ -37,13 +37,13 @@ export class SocialMediaRepository {
     await this.docClient.send(new PutCommand({
       TableName: this.accountsTable,
       Item: {
-        PK: `USER#${userId}`,
-        SK: `SOCIAL#${account.platform}#${account.accountId}`,
+        userId: userId,
+        platformAccountId: `${account.platform}#${account.accountId}`,
         ...accountWithMeta,
-        GSI1PK: `PLATFORM#${account.platform}`,
-        GSI1SK: `USER#${userId}`,
-        GSI2PK: `STATUS#${account.isActive}`,
-        GSI2SK: `USER#${userId}#${account.platform}`,
+        // GSI indexes for querying
+        platform: account.platform,
+        accountStatus: account.isActive ? 'active' : 'inactive',
+        accountType: 'social_media',
       },
     }));
 
@@ -53,10 +53,9 @@ export class SocialMediaRepository {
   async getAccountsByUser(userId: string): Promise<SocialMediaAccount[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.accountsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'SOCIAL#',
+        ':userId': userId,
       },
     }));
 
@@ -67,8 +66,8 @@ export class SocialMediaRepository {
     await this.docClient.send(new UpdateCommand({
       TableName: this.accountsTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: `SOCIAL#${platform}#${accountId}`,
+        userId: userId,
+        platformAccountId: `${platform}#${accountId}`,
       },
       UpdateExpression: 'SET accessToken = :token, updatedAt = :now' + (refreshToken ? ', refreshToken = :refresh' : ''),
       ExpressionAttributeValues: {
@@ -83,8 +82,8 @@ export class SocialMediaRepository {
     await this.docClient.send(new DeleteCommand({
       TableName: this.accountsTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: `SOCIAL#${platform}#${accountId}`,
+        userId: userId,
+        platformAccountId: `${platform}#${accountId}`,
       },
     }));
   }
@@ -94,13 +93,14 @@ export class SocialMediaRepository {
     await this.docClient.send(new PutCommand({
       TableName: this.postsTable,
       Item: {
-        PK: `USER#${userId}`,
-        SK: `POST#${post.platform}#${post.id}`,
+        userId: userId,
+        postId: `${post.platform}#${post.id}`,
         ...post,
-        GSI1PK: `PLATFORM#${post.platform}`,
-        GSI1SK: post.createdAt.toISOString(),
-        GSI2PK: `AUTHOR#${post.authorId}`,
-        GSI2SK: post.createdAt.toISOString(),
+        // Additional fields for indexing
+        platform: post.platform,
+        createdAtISO: post.createdAt.toISOString(),
+        authorId: post.authorId,
+        postType: 'social_media_post',
       },
     }));
   }
@@ -108,10 +108,9 @@ export class SocialMediaRepository {
   async getPostsByUser(userId: string, limit: number = 50): Promise<SocialMediaPost[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.postsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': 'POST#',
+        ':userId': userId,
       },
       ScanIndexForward: false, // Sort by newest first
       Limit: limit,
@@ -123,12 +122,12 @@ export class SocialMediaRepository {
   async getPostsByPlatform(userId: string, platform: string, limit: number = 50): Promise<SocialMediaPost[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.postsTable,
-      IndexName: 'GSI1',
-      KeyConditionExpression: 'GSI1PK = :pk',
-      FilterExpression: 'begins_with(PK, :userPk)',
+      IndexName: 'platform-createdAtISO-index', // GSI with platform as partition key
+      KeyConditionExpression: 'platform = :platform',
+      FilterExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        ':pk': `PLATFORM#${platform}`,
-        ':userPk': `USER#${userId}`,
+        ':platform': platform,
+        ':userId': userId,
       },
       ScanIndexForward: false,
       Limit: limit,
@@ -142,11 +141,13 @@ export class SocialMediaRepository {
     await this.docClient.send(new PutCommand({
       TableName: this.engagementTable,
       Item: {
-        PK: `USER#${userId}`,
-        SK: `ENGAGEMENT#${engagement.postId}#${engagement.timestamp.toISOString()}`,
+        userId: userId,
+        engagementId: `${engagement.postId}#${engagement.timestamp.toISOString()}`,
         ...engagement,
-        GSI1PK: `POST#${engagement.postId}`,
-        GSI1SK: engagement.timestamp.toISOString(),
+        // Additional fields for indexing
+        postId: engagement.postId,
+        timestampISO: engagement.timestamp.toISOString(),
+        engagementType: 'social_media_engagement',
       },
     }));
   }
@@ -154,10 +155,10 @@ export class SocialMediaRepository {
   async getEngagementHistory(userId: string, postId: string): Promise<SocialMediaEngagement[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.engagementTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId AND begins_with(engagementId, :postPrefix)',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': `ENGAGEMENT#${postId}#`,
+        ':userId': userId,
+        ':postPrefix': `${postId}#`,
       },
       ScanIndexForward: false,
     }));
@@ -169,11 +170,12 @@ export class SocialMediaRepository {
   async getEngagementMetrics(userId: string, startDate: Date, endDate: Date): Promise<SocialMediaEngagement[]> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.engagementTable,
-      KeyConditionExpression: 'PK = :pk AND SK BETWEEN :start AND :end',
+      KeyConditionExpression: 'userId = :userId',
+      FilterExpression: 'timestampISO BETWEEN :start AND :end',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':start': `ENGAGEMENT#${startDate.toISOString()}`,
-        ':end': `ENGAGEMENT#${endDate.toISOString()}zzz`, // Add 'zzz' to ensure we get all items
+        ':userId': userId,
+        ':start': startDate.toISOString(),
+        ':end': endDate.toISOString(),
       },
     }));
 
@@ -183,13 +185,18 @@ export class SocialMediaRepository {
   async getTopPerformingPosts(userId: string, platform?: string, limit: number = 10): Promise<SocialMediaPost[]> {
     let queryParams: any = {
       TableName: this.postsTable,
-      KeyConditionExpression: 'PK = :pk AND begins_with(SK, :sk)',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
-        ':pk': `USER#${userId}`,
-        ':sk': platform ? `POST#${platform}#` : 'POST#',
+        ':userId': userId,
       },
       Limit: limit * 2, // Get more items to sort by engagement
     };
+
+    // Add platform filter if specified
+    if (platform) {
+      queryParams.FilterExpression = 'platform = :platform';
+      queryParams.ExpressionAttributeValues[':platform'] = platform;
+    }
 
     const response = await this.docClient.send(new QueryCommand(queryParams));
     const posts = (response.Items || []) as SocialMediaPost[];

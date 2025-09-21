@@ -11,9 +11,11 @@ import { ddbDocClient } from '../dynamodb';
 
 export interface User {
   userId: string;
+  recordType: string;                // "USER_PROFILE"
   email: string;
   username: string;
   fullName: string;
+  password: string;                  // Added password field
   avatar?: string;
   subscription: 'premium' | 'basic' | 'free';
   socialAccountsConnected: string[];
@@ -26,6 +28,8 @@ export interface User {
   updatedAt: Date;
   isActive: boolean;
   lastLoginAt: Date;
+  accountType: string;               // "USER_ACCOUNT"
+  status: string;                    // "active" | "inactive"
 }
 
 export class UserRepository {
@@ -37,13 +41,16 @@ export class UserRepository {
     this.usersTable = process.env.DYNAMODB_USERS_TABLE || 'cloudstro-users';
   }
 
-  async createUser(userData: Omit<User, 'userId' | 'createdAt' | 'updatedAt'>): Promise<User> {
+  async createUser(userData: Omit<User, 'userId' | 'recordType' | 'createdAt' | 'updatedAt' | 'accountType' | 'status'>): Promise<User> {
     const now = new Date();
     const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     const user: User = {
       ...userData,
       userId,
+      recordType: 'USER_PROFILE',
+      accountType: 'USER_ACCOUNT',
+      status: 'active',
       createdAt: now,
       updatedAt: now,
     };
@@ -51,11 +58,23 @@ export class UserRepository {
     await this.docClient.send(new PutCommand({
       TableName: this.usersTable,
       Item: {
-        PK: `USER#${userId}`,
-        SK: 'PROFILE',
-        ...user,
-        GSI1PK: `EMAIL#${userData.email}`,
-        GSI1SK: `USER#${userId}`,
+        // Use meaningful column names as per schema
+        userId: user.userId,
+        recordType: user.recordType,
+        email: user.email,
+        username: user.username,
+        fullName: user.fullName,
+        password: user.password,
+        avatar: user.avatar,
+        subscription: user.subscription,
+        socialAccountsConnected: user.socialAccountsConnected,
+        aiPreferences: user.aiPreferences,
+        createdAt: user.createdAt.toISOString(),
+        updatedAt: user.updatedAt.toISOString(),
+        isActive: user.isActive,
+        lastLoginAt: user.lastLoginAt.toISOString(),
+        accountType: user.accountType,
+        status: user.status,
       },
     }));
 
@@ -66,8 +85,8 @@ export class UserRepository {
     const response = await this.docClient.send(new GetCommand({
       TableName: this.usersTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: 'PROFILE',
+        userId: userId,
+        recordType: 'USER_PROFILE',
       },
     }));
 
@@ -75,9 +94,11 @@ export class UserRepository {
 
     return {
       userId: response.Item.userId,
+      recordType: response.Item.recordType,
       email: response.Item.email,
       username: response.Item.username,
       fullName: response.Item.fullName,
+      password: response.Item.password,
       avatar: response.Item.avatar,
       subscription: response.Item.subscription,
       socialAccountsConnected: response.Item.socialAccountsConnected || [],
@@ -90,16 +111,18 @@ export class UserRepository {
       updatedAt: new Date(response.Item.updatedAt),
       isActive: response.Item.isActive,
       lastLoginAt: new Date(response.Item.lastLoginAt),
+      accountType: response.Item.accountType,
+      status: response.Item.status,
     } as User;
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
     const response = await this.docClient.send(new QueryCommand({
       TableName: this.usersTable,
-      IndexName: 'GSI1',
-      KeyConditionExpression: 'GSI1PK = :email',
+      IndexName: 'email-index',
+      KeyConditionExpression: 'email = :email',
       ExpressionAttributeValues: {
-        ':email': `EMAIL#${email}`,
+        ':email': email,
       },
     }));
 
@@ -108,9 +131,11 @@ export class UserRepository {
     const item = response.Items[0];
     return {
       userId: item.userId,
+      recordType: item.recordType,
       email: item.email,
       username: item.username,
       fullName: item.fullName,
+      password: item.password,
       avatar: item.avatar,
       subscription: item.subscription,
       socialAccountsConnected: item.socialAccountsConnected || [],
@@ -123,6 +148,8 @@ export class UserRepository {
       updatedAt: new Date(item.updatedAt),
       isActive: item.isActive,
       lastLoginAt: new Date(item.lastLoginAt),
+      accountType: item.accountType,
+      status: item.status,
     } as User;
   }
 
@@ -177,8 +204,8 @@ export class UserRepository {
     await this.docClient.send(new UpdateCommand({
       TableName: this.usersTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: 'PROFILE',
+        userId: userId,
+        recordType: 'USER_PROFILE',
       },
       UpdateExpression: `SET ${updateExpressions.join(', ')}`,
       ExpressionAttributeNames: Object.keys(expressionAttributeNames).length > 0 ? expressionAttributeNames : undefined,
@@ -190,8 +217,8 @@ export class UserRepository {
     await this.docClient.send(new UpdateCommand({
       TableName: this.usersTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: 'PROFILE',
+        userId: userId,
+        recordType: 'USER_PROFILE',
       },
       UpdateExpression: 'SET lastLoginAt = :lastLogin, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
@@ -231,8 +258,8 @@ export class UserRepository {
     await this.docClient.send(new DeleteCommand({
       TableName: this.usersTable,
       Key: {
-        PK: `USER#${userId}`,
-        SK: 'PROFILE',
+        userId: userId,
+        recordType: 'USER_PROFILE',
       },
     }));
   }
@@ -240,18 +267,20 @@ export class UserRepository {
   async getAllUsers(limit: number = 50): Promise<User[]> {
     const response = await this.docClient.send(new ScanCommand({
       TableName: this.usersTable,
-      FilterExpression: 'SK = :sk',
+      FilterExpression: 'recordType = :recordType',
       ExpressionAttributeValues: {
-        ':sk': 'PROFILE',
+        ':recordType': 'USER_PROFILE',
       },
       Limit: limit,
     }));
 
     return (response.Items || []).map(item => ({
       userId: item.userId,
+      recordType: item.recordType,
       email: item.email,
       username: item.username,
       fullName: item.fullName,
+      password: item.password,
       avatar: item.avatar,
       subscription: item.subscription,
       socialAccountsConnected: item.socialAccountsConnected || [],
@@ -264,6 +293,8 @@ export class UserRepository {
       updatedAt: new Date(item.updatedAt),
       isActive: item.isActive,
       lastLoginAt: new Date(item.lastLoginAt),
+      accountType: item.accountType,
+      status: item.status,
     })) as User[];
   }
 

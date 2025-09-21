@@ -639,7 +639,7 @@ DYNAMODB_SOCIAL_ENGAGEMENT_TABLE=cloudstro-social-engagement
 DYNAMODB_AI_INSIGHTS_TABLE=cloudstro-ai-insights
 
 # AWS Configuration
-AWS_REGION=us-east-1
+AWS_REGION=ap-southeast-5
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
 

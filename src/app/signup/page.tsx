@@ -7,22 +7,55 @@ import { useState } from "react";
 export default function SignupPage() {
   const [errors, setErrors] = useState({
     fullName: "",
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // API call function
+  const createUser = async (userData: {
+    email: string;
+    username: string;
+    fullName: string;
+    password: string;
+  }) => {
+    const response = await fetch('/api/dynamodb/addUser', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...userData,
+        subscription: 'free', // Default subscription
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to create account');
+    }
+
+    return response.json();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage({ type: "", text: "" });
 
     const formData = new FormData(e.currentTarget);
     const fullName = formData.get("fullName") as string;
+    const username = formData.get("username") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
 
     const newErrors = {
       fullName: "",
+      username: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -33,6 +66,14 @@ export default function SignupPage() {
       newErrors.fullName = "Please do not leave any fields empty";
     }
 
+    if (!username || username.trim() === "") {
+      newErrors.username = "Please do not leave any fields empty";
+    } else if (username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters long";
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      newErrors.username = "Username can only contain letters, numbers, and underscores";
+    }
+
     if (!email || email.trim() === "") {
       newErrors.email = "Please do not leave any fields empty";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -41,6 +82,8 @@ export default function SignupPage() {
 
     if (!password || password.trim() === "") {
       newErrors.password = "Please do not leave any fields empty";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long";
     }
 
     if (!confirmPassword || confirmPassword.trim() === "") {
@@ -57,13 +100,50 @@ export default function SignupPage() {
     // If no errors, proceed with signup logic
     if (
       !newErrors.fullName &&
+      !newErrors.username &&
       !newErrors.email &&
       !newErrors.password &&
       !newErrors.confirmPassword
     ) {
-      console.log("Signup attempt:", { fullName, email, password });
-      // Add your signup logic here
+      try {
+        const result = await createUser({
+          fullName,
+          username,
+          email,
+          password,
+        });
+
+        console.log("User created successfully:", result);
+        setSubmitMessage({
+          type: "success",
+          text: "Account created successfully! You can now log in.",
+        });
+
+        // Reset form
+        (e.target as HTMLFormElement).reset();
+        setErrors({
+          fullName: "",
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+
+        // Optionally redirect to login page after a delay
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
+
+      } catch (error) {
+        console.error("Signup error:", error);
+        setSubmitMessage({
+          type: "error",
+          text: error instanceof Error ? error.message : "Failed to create account. Please try again.",
+        });
+      }
     }
+
+    setIsSubmitting(false);
   };
 
   const clearError = (field: string) => {
@@ -97,6 +177,19 @@ export default function SignupPage() {
                 boxShadow: "5px 5px 0px #5a5a5a, -5px -5px 0px #aaaaaaff",
               }}
             >
+              {/* Submit Message */}
+              {submitMessage.text && (
+                <div
+                  className={`mb-4 p-3 rounded-lg text-center text-sm font-medium ${
+                    submitMessage.type === "success"
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : "bg-red-100 text-red-700 border border-red-300"
+                  }`}
+                >
+                  {submitMessage.text}
+                </div>
+              )}
+
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label
@@ -120,6 +213,32 @@ export default function SignupPage() {
                   {errors.fullName && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.fullName}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-semibold text-gray-700 mb-1"
+                  >
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      errors.username
+                        ? "border-red-500 bg-red-50"
+                        : "border-gray-300"
+                    }`}
+                    placeholder="Choose a unique username"
+                    onChange={() => clearError("username")}
+                  />
+                  {errors.username && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.username}
                     </p>
                   )}
                 </div>
@@ -202,9 +321,14 @@ export default function SignupPage() {
 
                 <button
                   type="submit"
-                  className="cursor-pointer w-full px-6 py-3 bg-blue-600 text-white rounded-lg text-base font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                  disabled={isSubmitting}
+                  className={`cursor-pointer w-full px-6 py-3 text-white rounded-lg text-base font-semibold transform transition-all duration-300 shadow-lg ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 hover:scale-105"
+                  }`}
                 >
-                  Create Account
+                  {isSubmitting ? "Creating Account..." : "Create Account"}
                 </button>
               </form>
 

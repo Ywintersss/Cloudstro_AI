@@ -9,9 +9,34 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // API call function
+  const loginUser = async (userData: {
+    email: string;
+    password: string;
+  }) => {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Login failed');
+    }
+
+    return response.json();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitMessage({ type: "", text: "" });
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get("email") as string;
@@ -35,11 +60,38 @@ export default function LoginPage() {
 
     setErrors(newErrors);
 
-    // If no errors, redirect to home page or dashboard
+    // If no errors, proceed with login
     if (!newErrors.email && !newErrors.password) {
-      window.location.href = "/dashboard"; // Redirects to home page
-      // Or use: window.location.href = '/dashboard'; for a dashboard page
+      try {
+        const result = await loginUser({
+          email,
+          password,
+        });
+
+        console.log("Login successful:", result);
+        setSubmitMessage({
+          type: "success",
+          text: "Login successful! Redirecting to dashboard...",
+        });
+
+        // Store user info in localStorage for client-side access
+        localStorage.setItem('user', JSON.stringify(result.user));
+
+        // Redirect to dashboard after a brief delay
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
+
+      } catch (error) {
+        console.error("Login error:", error);
+        setSubmitMessage({
+          type: "error",
+          text: error instanceof Error ? error.message : "Login failed. Please try again.",
+        });
+      }
     }
+
+    setIsSubmitting(false);
   };
 
   const clearError = (field: string) => {
@@ -73,6 +125,19 @@ export default function LoginPage() {
                 boxShadow: "5px 5px 0px #5a5a5a, -5px -5px 0px #aaaaaaff",
               }}
             >
+              {/* Submit Message */}
+              {submitMessage.text && (
+                <div
+                  className={`mb-4 p-3 rounded-lg text-center text-sm font-medium ${
+                    submitMessage.type === "success"
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : "bg-red-100 text-red-700 border border-red-300"
+                  }`}
+                >
+                  {submitMessage.text}
+                </div>
+              )}
+
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
                   <label
@@ -126,9 +191,14 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  className="cursor-pointer w-full px-6 py-3 bg-blue-600 text-white rounded-lg text-base font-semibold hover:bg-blue-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                  disabled={isSubmitting}
+                  className={`cursor-pointer w-full px-6 py-3 text-white rounded-lg text-base font-semibold transform transition-all duration-300 shadow-lg ${
+                    isSubmitting
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 hover:scale-105"
+                  }`}
                 >
-                  Login
+                  {isSubmitting ? "Logging in..." : "Login"}
                 </button>
               </form>
 

@@ -1,16 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UserRepository } from '../../../../lib/repositories/user.repository';
+import bcrypt from 'bcryptjs';
 
 const userRepository = new UserRepository();
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, username, fullName, subscription = 'free' } = body;
+    const { email, username, fullName, password, subscription = 'free' } = body;
 
-    if (!email || !username || !fullName) {
+    if (!email || !username || !fullName || !password) {
       return NextResponse.json(
-        { error: 'Email, username, and full name are required' },
+        { error: 'Email, username, full name, and password are required' },
+        { status: 400 }
+      );
+    }
+
+    // Basic password validation
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters long' },
         { status: 400 }
       );
     }
@@ -24,10 +33,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await userRepository.createUser({
       email,
       username,
       fullName,
+      password: hashedPassword,
       subscription,
       socialAccountsConnected: [],
       aiPreferences: {

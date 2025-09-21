@@ -830,7 +830,7 @@ export default function PlatformDetails({
                   <div className="flex flex-row gap-5">
                     <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-3">
                       <span className="text-3xl">
-                        {currentPlatformData.icon}
+                        {currentPlatformData?.icon}
                       </span>
                       Analytics
                     </h2>
@@ -1202,8 +1202,8 @@ export default function PlatformDetails({
               Back to Overview
             </button>
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-2 flex items-center gap-3">
-              <span className="text-4xl">{currentPlatformData.icon}</span>
-              {currentPlatformData.name} Analytics
+              <span className="text-4xl">{currentPlatformData?.icon}</span>
+              {currentPlatformData?.name} Analytics
             </h1>
           </div>
           
@@ -1318,7 +1318,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Total Likes</p>
           <p className="text-2xl font-bold text-blue-600">
-            {currentPlatformData.stats.totalLikes.toLocaleString()}
+            {currentPlatformData?.stats.totalLikes.toLocaleString()}
           </p>
         </div>
         <div
@@ -1346,7 +1346,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Shares</p>
           <p className="text-2xl font-bold text-purple-600">
-            {currentPlatformData.stats.shares}
+            {currentPlatformData?.stats?.shares}
           </p>
         </div>
         <div
@@ -1360,7 +1360,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Engagement Rate</p>
           <p className="text-2xl font-bold text-orange-600">
-            {currentPlatformData.stats.engagementRate}%
+            {currentPlatformData?.stats?.engagementRate}%
           </p>
         </div>
       </div>
@@ -1387,7 +1387,7 @@ export default function PlatformDetails({
                   {(() => {
                     // Find the most active hour from all analytics
                     const hours: number[] = [];
-                    currentPlatformData.allContent.forEach(content => {
+                    currentPlatformData?.allContent?.forEach(content => {
                       if (content.analytics?.hourlyEngagement) {
                         content.analytics.hourlyEngagement.forEach((val, hour) => {
                           hours[hour] = (hours[hour] || 0) + val;
@@ -1409,7 +1409,7 @@ export default function PlatformDetails({
                     // Find the most common day from all content dates
                     const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
                     const dayCounts: Record<string, number> = {};
-                    currentPlatformData.allContent.forEach(content => {
+                    currentPlatformData?.allContent?.forEach(content => {
                       const d = new Date(content.date);
                       const day = days[d.getDay()];
                       dayCounts[day] = (dayCounts[day] || 0) + 1;
@@ -1424,7 +1424,7 @@ export default function PlatformDetails({
                 <p className="text-lg font-bold text-purple-600">
                   {(() => {
                     // Average engagement rate from analytics
-                    const rates = currentPlatformData.allContent.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
+                    const rates = currentPlatformData?.allContent?.map(c => c.analytics?.engagementRate).filter(Boolean) as number[];
                     if (rates.length === 0) return "N/A";
                     const avg = rates.reduce((a,b) => a+b,0)/rates.length;
                     return `${avg.toFixed(1)}%`;
@@ -1436,7 +1436,7 @@ export default function PlatformDetails({
                 <p className="text-lg font-bold text-orange-600">
                   {(() => {
                     // Sum of all views from analytics
-                    const views = currentPlatformData.allContent.map(c => c.analytics?.views).filter(Boolean) as number[];
+                    const views = currentPlatformData?.allContent?.map(c => c.analytics?.views).filter(Boolean) as number[];
                     if (views.length === 0) return "N/A";
                     const total = views.reduce((a,b) => a+b,0);
                     return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
@@ -1465,7 +1465,7 @@ export default function PlatformDetails({
               AI Platform Insights
             </h3>
             <p className="text-white/80 text-sm">
-              AI-powered analysis of your {currentPlatformData.name} performance
+              AI-powered analysis of your {currentPlatformData?.name} performance
             </p>
           </div>
         </div>
@@ -1481,11 +1481,11 @@ export default function PlatformDetails({
               <div className="flex justify-between items-center text-white/90">
                 <span>Platform Score:</span>
                 <span className="font-bold text-green-300">
-                  {currentPlatformData.stats.engagementRate >= 10
+                  {currentPlatformData?.stats.engagementRate >= 10
                     ? "Excellent"
-                    : currentPlatformData.stats.engagementRate >= 7
+                    : currentPlatformData?.stats.engagementRate >= 7
                     ? "Good"
-                    : currentPlatformData.stats.engagementRate >= 5
+                    : currentPlatformData?.stats.engagementRate >= 5
                     ? "Average"
                     : "Needs Improvement"}
                 </span>
@@ -1493,7 +1493,7 @@ export default function PlatformDetails({
               <div className="flex justify-between items-center text-white/90">
                 <span>Content Quality:</span>
                 <span className="font-bold text-blue-300">
-                  {currentPlatformData.allContent.filter(
+                  {currentPlatformData?.allContent.filter(
                     (c) =>
                       c.analytics?.engagementRate &&
                       c.analytics.engagementRate > 8
@@ -1598,7 +1598,7 @@ export default function PlatformDetails({
                   );
                 }
 
-                return recommendations.slice(0, 3).map((rec, index) => (
+                return recommendations?.slice(0, 3).map((rec, index) => (
                   <div key={index} className="flex items-start gap-2">
                     <div className="w-1.5 h-1.5 bg-yellow-300 rounded-full mt-2 flex-shrink-0"></div>
                     <span className="text-sm text-white/90">{rec}</span>

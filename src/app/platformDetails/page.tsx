@@ -169,7 +169,7 @@ const AIAnalysisWidget = ({
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="text-center">
                         <p className="font-bold text-purple-600">
-                          {analyticsContent.analytics.views.toLocaleString()}
+                          {analyticsContent.analytics.views?.toLocaleString()}
                         </p>
                         <p className="text-gray-600">Views</p>
                       </div>
@@ -883,13 +883,13 @@ export default function PlatformDetails({
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Views</p>
                     <p className="text-xl font-bold text-blue-500">
-                      {analyticsContent?.analytics?.views.toLocaleString()}
+                      {analyticsContent?.analytics?.views?.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Likes</p>
                     <p className="text-xl font-bold text-red-500">
-                      {analyticsContent?.analytics?.likes.toLocaleString()}
+                      {analyticsContent?.analytics?.likes?.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
@@ -907,7 +907,7 @@ export default function PlatformDetails({
                   <div className="text-center">
                     <p className="text-sm text-gray-600">Impressions</p>
                     <p className="text-xl font-bold text-orange-500">
-                      {analyticsContent?.analytics?.impressions.toLocaleString()}
+                      {analyticsContent?.analytics?.impressions?.toLocaleString()}
                     </p>
                   </div>
                   <div className="text-center">
@@ -1318,7 +1318,7 @@ export default function PlatformDetails({
         >
           <p className="text-sm text-gray-600 mb-2">Total Likes</p>
           <p className="text-2xl font-bold text-blue-600">
-            {currentPlatformData?.stats?.totalLikes.toLocaleString()}
+            {currentPlatformData?.stats?.totalLikes?.toLocaleString()}
           </p>
         </div>
         <div
@@ -1439,7 +1439,7 @@ export default function PlatformDetails({
                     const views = currentPlatformData?.allContent?.map(c => c.analytics?.views).filter(Boolean) as number[];
                     if (views?.length === 0) return "N/A";
                     const total = views?.reduce((a,b) => a+b,0);
-                    return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total.toString();
+                    return total >= 1000 ? `${(total/1000).toFixed(1)}K` : total?.toString();
                   })()}
                 </p>
               </div>
@@ -1657,19 +1657,19 @@ export default function PlatformDetails({
                   if (engagementRate >= 10) {
                     return `Your ${
                       currentPlatformData?.name
-                    } presence is performing exceptionally well with ${totalLikes.toLocaleString()} total likes and ${engagementRate}% engagement rate. Your ${contentCount} pieces of content demonstrate strong audience connection and viral potential. This platform should be a key focus area for content expansion.`;
+                    } presence is performing exceptionally well with ${totalLikes?.toLocaleString()} total likes and ${engagementRate}% engagement rate. Your ${contentCount} pieces of content demonstrate strong audience connection and viral potential. This platform should be a key focus area for content expansion.`;
                   } else if (engagementRate >= 7) {
                     return `${
                       currentPlatformData?.name
-                    } shows solid performance with ${totalLikes.toLocaleString()} total likes across ${contentCount} posts. Your ${engagementRate}% engagement rate indicates good audience resonance. With strategic optimization, this platform has strong growth potential.`;
+                    } shows solid performance with ${totalLikes?.toLocaleString()} total likes across ${contentCount} posts. Your ${engagementRate}% engagement rate indicates good audience resonance. With strategic optimization, this platform has strong growth potential.`;
                   } else if (engagementRate >= 5) {
                     return `Your ${
                       currentPlatformData?.name
-                    } account shows moderate performance with ${totalLikes.toLocaleString()} total likes. The ${engagementRate}% engagement rate suggests room for improvement through content optimization and audience targeting strategies.`;
+                    } account shows moderate performance with ${totalLikes?.toLocaleString()} total likes. The ${engagementRate}% engagement rate suggests room for improvement through content optimization and audience targeting strategies.`;
                   } else {
                     return `${
                       currentPlatformData?.name
-                    } presents an opportunity for growth. While you have ${contentCount} posts and ${totalLikes.toLocaleString()} total likes, the ${engagementRate}% engagement rate indicates potential for significant improvement through strategic content refinement.`;
+                    } presents an opportunity for growth. While you have ${contentCount} posts and ${totalLikes?.toLocaleString()} total likes, the ${engagementRate}% engagement rate indicates potential for significant improvement through strategic content refinement.`;
                   }
                 })()}
               </p>

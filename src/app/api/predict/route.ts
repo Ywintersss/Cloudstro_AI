@@ -42,19 +42,19 @@ export async function POST(req: Request) {
       : "{}";
 
     // 2. Call Bedrock
-    const bedrockResponse = await callBedrock("HI");
+    // const bedrockResponse = await callBedrock("HI");
 
-    const bedrockText = bedrockResponse.body
-      ? Buffer.from(bedrockResponse.body as Uint8Array).toString()
-      : "{}";
+    // const bedrockText = bedrockResponse.body
+    //   ? Buffer.from(bedrockResponse.body as Uint8Array).toString()
+    //   : "{}";
 
-    // return NextResponse.json({ prediction: JSON.parse(rawPrediction) });
+    return NextResponse.json({ prediction: JSON.parse(rawPrediction) });
 
     // 3. Return combined
-    return NextResponse.json({
-      prediction: JSON.parse(rawPrediction),
-      explanation: bedrockText,
-    });
+    // return NextResponse.json({
+    //   prediction: JSON.parse(rawPrediction),
+    //   explanation: bedrockText,
+    // });
   } catch (err: any) {
     console.error("Error in /predict:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -63,10 +63,22 @@ export async function POST(req: Request) {
 
 // ---- HELPERS ----
 const callSagemaker = async (input: any) => {
+  const tensor = Array.from({ length: 3 }, () =>
+    Array.from({ length: 224 }, () =>
+      Array.from({ length: 224 }, () => 0.0)
+    )
+  );
+
+  const payload = {
+    instances: [tensor]  // batch of 1 image
+  };
+
   return await sagemakerClient.send(
     new InvokeEndpointCommand({
       EndpointName: SAGEMAKER_ENDPOINT,
-      Body: Buffer.from(JSON.stringify(input)),
+      Body: Buffer.from(JSON.stringify(
+        payload
+      )),
       ContentType: "application/json",
     })
   );

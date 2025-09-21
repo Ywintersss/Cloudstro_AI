@@ -81,7 +81,6 @@ export default function EngagementContent() {
             background: "#ffffff",
             border: "2px solid #e0e0e0",
             boxSizing: "border-box",
-            height: "200px",
           }}
         >
           <div className="flex items-center justify-between mb-4">

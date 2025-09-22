@@ -6,9 +6,10 @@ const userRepository = new UserRepository();
 
 export async function POST(request: NextRequest) {
   console.log("hit")
-  console.log(process.env.REGION_1 as string);
-  console.log(process.env.MY_AWS_ACCESS_KEY_ID as string);
-  console.log(process.env.MY_AWS_SECRET_ACCESS_KEY as string);
+  console.log(process.env.REGION_1! as string);
+  console.log(process.env.SAGEMAKER_ENDPOINT! as string);
+  console.log(process.env.AWS_ACCESS_KEY_ID! as string);
+  console.log(process.env.AWS_SECRET_ACCESS_KEY! as string);
   try {
     const body = await request.json();
     const { email, username, fullName, password, subscription = 'free' } = body;

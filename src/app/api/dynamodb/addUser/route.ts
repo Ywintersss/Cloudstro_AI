@@ -9,8 +9,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, username, fullName, password, subscription = 'free' } = body;
 
-    console.log(process.env.MY_AWS_ACCESS_KEY_ID);
-    console.log(process.env.MY_AWS_SECRET_ACCESS_KEY);
+    console.log("hit")
+    console.log(process.env.REGION_1 as string);
+    console.log(process.env.MY_AWS_ACCESS_KEY_ID as string);
+    console.log(process.env.MY_AWS_SECRET_ACCESS_KEY as string);
 
     if (!email || !username || !fullName || !password) {
       return NextResponse.json(

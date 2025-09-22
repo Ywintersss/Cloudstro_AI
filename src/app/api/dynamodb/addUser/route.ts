@@ -9,6 +9,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, username, fullName, password, subscription = 'free' } = body;
 
+    console.log(process.env.MY_AWS_ACCESS_KEY_ID);
+    console.log(process.env.MY_AWS_SECRET_ACCESS_KEY);
+
     if (!email || !username || !fullName || !password) {
       return NextResponse.json(
         { error: 'Email, username, full name, and password are required' },
@@ -35,6 +38,8 @@ export async function POST(request: NextRequest) {
 
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    console.log("everything ok here")
 
     const user = await userRepository.createUser({
       email,

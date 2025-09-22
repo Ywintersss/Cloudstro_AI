@@ -19,8 +19,8 @@
   const bedrockClient = new BedrockRuntimeClient({  
     region: BEDROCK_REGION,
     credentials: {
-      accessKeyId: process.env.ACCESS_KEY_ID!,
-      secretAccessKey: process.env.SECRET_ACCESS_KEY!,
+      accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY!,
     },
   });
 
